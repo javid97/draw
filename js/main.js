@@ -209,7 +209,7 @@ const drawingMode = () => {
     let d;
     switch (mode) {
         case MODES.LINE:
-            d = new Line(x1, y1, x2, y2, strokeColor, lineWidth);
+            d = new Line();
             d.draw();
             break;
         case MODES.RECTANGLE:
@@ -471,35 +471,6 @@ let getCurrentPosition = (x, y) => {
             if (x > x1 && x < x2 && y > y1 && y < y2) {
                 return { index: i, constName: constName, pos: 'o' };
             }
-            // if (x1 - anchrSize < x && x < x1 + anchrSize) {
-            //     if (y1 - anchrSize < y && y < y1 + anchrSize) {
-            //         return { index: i, constName: constName, pos: 'tl' };
-            //     } else if (y2 - anchrSize < y && y < y2 + anchrSize) {
-            //         return { index: i, constName: constName, pos: 'bl' };
-            //     } else if (midy - anchrSize < y && y < midy + anchrSize) {
-            //         return { index: i, constName: constName, pos: 'l' };
-            //     }
-            // } else if (x2 - anchrSize < x && x < x2 + anchrSize) {
-            //     if (y1 - anchrSize < y && y < y1 + anchrSize) {
-            //         return { index: i, constName: constName, pos: 'tr' };
-            //     } else if (y2 - anchrSize < y && y < y2 + anchrSize) {
-            //         return { index: i, constName: constName, pos: 'br' };
-            //     } else if (midy - anchrSize < y && y < midy + anchrSize) {
-            //         return { index: i, constName: constName, pos: 'r' };
-            //     }
-            // } else if (midx - anchrSize < x && x < midx + anchrSize) {
-            //     if (y1 - anchrSize < y && y < y1 + anchrSize) {
-            //         return { index: i, constName: constName, pos: 't' };
-            //     } else if (y2 - anchrSize < y && y < y2 + anchrSize) {
-            //         return { index: i, constName: constName, pos: 'b' };
-            //     } else if (y1 - anchrSize < y && y < y2 + anchrSize) {
-            //         return { index: i, constName: constName, pos: 'i' };
-            //     }
-            // } else if (x1 - anchrSize < x && x < x2 + anchrSize) {
-            //     if (y1 - anchrSize < y && y < y2 + anchrSize) {
-            //         return { index: i, constName: constName, pos: 'i' };
-            //     }
-            // }
         }
     }
     return { index: -1, constName: "origin" };
