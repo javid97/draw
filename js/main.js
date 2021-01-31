@@ -33,85 +33,51 @@ topCanvas.height = 15;
 leftCanvas.width = 15;
 leftCanvas.height = canvas.height + canvas.offsetTop + 15 + 200;
 
-let TopRuler = () => {
+let Ruler = () => {
     let a = 0;
+    let b = 0;
     for (let i = 0; i <= canvas.width; i++) {
         if (i % 5 == 0) {
             if (i % 50 == 0) {
-                topCtx.beginPath();
-                topCtx.lineWidth = 1;
-                topCtx.moveTo(i + canvas.offsetLeft + 15, topCanvas.height);
-                topCtx.lineTo(i + canvas.offsetLeft + 15, topCanvas.height - 15);
-                topCtx.strokeStyle = "#fff";
-                topCtx.stroke();
+                scale(topCtx, i, canvas, topCanvas, 15);
                 topCtx.closePath();
                 topCtx.font = "9px tahoma";
                 topCtx.fillStyle = "#efefef";
                 topCtx.fillText(a.toString(), i + 2 + canvas.offsetLeft + 15, 9);
                 a += 50;
-            } else if (i % 10 == 0) {
-                topCtx.beginPath();
-                topCtx.lineWidth = 1;
-                topCtx.moveTo(i + canvas.offsetLeft + 15, topCanvas.height);
-                topCtx.lineTo(i + canvas.offsetLeft + 15, topCanvas.height - 5);
-                topCtx.strokeStyle = "#fff";
-                topCtx.stroke();
-                topCtx.closePath();
-            }
-            else {
-                topCtx.beginPath();
-                topCtx.lineWidth = 1;
-                topCtx.moveTo(i + canvas.offsetLeft + 15, topCanvas.height);
-                topCtx.lineTo(i + canvas.offsetLeft + 15, topCanvas.height - 3);
-                topCtx.strokeStyle = "#fff";
-                topCtx.stroke();
-                topCtx.closePath();
-            }
-
+            } else if (i % 10 == 0) { scale(topCtx, i, canvas, topCanvas, 5); }
+            else { scale(topCtx, i, canvas, topCanvas, 3); }
         }
     }
-}
-let LeftRuler = () => {
-    let a = 0;
     for (let i = 0; i <= canvas.height; i++) {
         if (i % 5 == 0) {
             if (i % 50 == 0) {
-                leftCtx.beginPath();
-                leftCtx.moveTo(leftCanvas.width, i + canvas.offsetTop + 15);
-                leftCtx.lineTo(leftCanvas.width - 15, i + canvas.offsetTop + 15);
-                leftCtx.strokeStyle = "#fff";
-                leftCtx.stroke();
-                leftCtx.closePath();
-                // leftCtx.save();
-                // leftCtx.translate(2, canvas.offsetTop + i + 17);
-                // leftCtx.rotate(Math.PI/2);
+                scale(leftCtx, i, canvas, leftCanvas, 15);
                 leftCtx.font = "9px tahoma";
                 leftCtx.fillStyle = "#fff";
                 leftCtx.textBaseline = "top";
-                leftCtx.fillText(a.toString(), 0, canvas.offsetTop + i + 17);
-                //ctx.restore();
-                a += 50;
-            } else if (i % 10 == 0) {
-                leftCtx.beginPath();
-                leftCtx.moveTo(leftCanvas.width, i + canvas.offsetTop + 15);
-                leftCtx.lineTo(leftCanvas.width - 7, i + canvas.offsetTop + 15);
-                leftCtx.strokeStyle = "#fff";
-                leftCtx.stroke();
-                leftCtx.closePath();
-            } else {
-                leftCtx.beginPath();
-                leftCtx.moveTo(leftCanvas.width, i + canvas.offsetTop + 15);
-                leftCtx.lineTo(leftCanvas.width - 5, i + canvas.offsetTop + 15);
-                leftCtx.strokeStyle = "#fff";
-                leftCtx.stroke();
-                leftCtx.closePath();
-            }
-
+                leftCtx.fillText(b.toString(), 0, canvas.offsetTop + i + 17);
+                b += 50;
+            } else if (i % 10 == 0) { scale(leftCtx, i, canvas, leftCanvas, 5); }
+            else { scale(leftCtx, i, canvas, leftCanvas, 3); }
         }
     }
 }
-TopRuler();
-LeftRuler();
+let scale = (context, index, sourceCanvas, targetCanvas, lineHeight) => {
+    context.beginPath();
+    context.lineWidth = 1;
+    if (context == leftCtx) {
+        context.moveTo(targetCanvas.width, index + sourceCanvas.offsetTop + 15);
+        context.lineTo(targetCanvas.width - lineHeight, index + sourceCanvas.offsetTop + 15);
+    } else {
+        context.moveTo(index + sourceCanvas.offsetLeft + 15, targetCanvas.height);
+        context.lineTo(index + sourceCanvas.offsetLeft + 15, targetCanvas.height - lineHeight);
+    }
+    context.strokeStyle = "#fff";
+    context.stroke();
+    context.closePath();
+}
+Ruler();
 
 // Getting values from the input fields
 const FillColor = document.getElementById('fillColor');
@@ -373,7 +339,7 @@ let getCurrentPosition = (x, y) => {
             let slope = (box.y2 - box.y1) / (box.x2 - box.x1);
             let gx = x - box.x1;
             if (y <= slope * gx + box.y1 + anchrSize && y >= slope * gx + box.y1 - anchrSize) {
-                if(x >= box.x1 - anchrSize && x <= box.x2 + anchrSize  && y <= box.y2 + anchrSize && y >= box.y1 - anchrSize){
+                if (x >= box.x1 - anchrSize && x <= box.x2 + anchrSize && y <= box.y2 + anchrSize && y >= box.y1 - anchrSize) {
                     return { index: i, constName: constName, pos: 'i' };
                 }
             } else if (box.x1 - anchrSize < x && x < box.x1 + anchrSize) {
