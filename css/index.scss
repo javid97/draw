@@ -1,0 +1,273 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+html {
+    font-size: 62.5%;
+}
+body {
+    background: #ccc;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
+.wrapper {
+    height: 100%;
+    width: 100%;
+}
+
+.undoRedoErr {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    height: 40px;
+    width: 300px;
+    background: #f33;
+    font-size: 20px;
+    color: #fff;
+    display: none;
+    z-index: 20;
+    place-items: center;
+}
+.err {
+    display: grid;
+}
+.shapeTools{
+    margin: 1rem auto;
+    padding-left: 5rem;
+    height: 3rem;
+    gap: .5rem;
+    width: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    flex-direction: row;
+    #stroke {
+        width: 15rem;
+        height: 2.5rem;
+        border: .1rem solid #fff;
+        margin: 5rem 0rem;
+        &:focus {
+            outline: none;
+        }
+    }
+    #lineWidth {
+        border: .1rem solid #fff;
+        width: 7rem;
+        height: 2.5rem;
+        &:focus {
+            outline: none;
+        }
+    }
+    .cp_wrapper {
+        position: relative;
+        border: .1rem solid #fff;
+        overflow: hidden;
+        width: 10rem;
+        height: 2.5rem;
+        display: grid;
+        place-items: center;
+    }
+    .background{
+        position: absolute;
+        font-size: 1.4rem;
+        pointer-events: none;
+    }
+    #strokeColor,#fillColor {
+        width: 200%;
+        height: 200%;
+    }
+    
+}
+.textTools{
+    margin: 1rem auto;
+    padding-left: 5rem;
+    height: 3rem;
+    gap: .5rem;
+    width: 80%;
+    display: none;
+    align-items: center;
+    justify-content: left;
+    flex-direction: row;
+    .fontName {
+        width: 15rem;
+        height: 2.5rem;
+        border: .1rem solid #fff;
+        margin: 5rem 0rem;
+        &:focus {
+            outline: none;
+        }
+    }
+    .fontSize {
+        border: .1rem solid #fff;
+        width: 7rem;
+        height: 2.5rem;
+        &:focus {
+            outline: none;
+        }
+    }
+}
+.container {
+    display: flex;
+    position: relative;
+    flex-direction: row;
+    width: 80%;
+    margin: 0 auto;
+    height: calc(100% - 9rem);
+    .tools {
+        width: 5rem;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        gap: .5rem;
+        .activeBtn{
+            background: dodgerblue;
+            color: #fff;
+        }
+        .button {
+            height: 3rem;
+            width: 3rem;
+            font-size: 1.6rem;
+            font-weight: bolder;
+            position: relative;
+            border-radius: 50%;
+            border: none;
+            outline: none;
+            box-shadow: .2rem .2rem 1rem #111;
+            
+            &::after {
+                content: attr(data-title);
+                position: absolute;
+                height: 2rem;
+                width: 10rem;
+                background: rgba(1,1,1,.7);
+                color: #fff;
+                left: 100%;
+                top: .5rem;
+                line-height: 2rem;
+                font-weight: normal;
+                display: none;
+                z-index: 100;
+                border-radius: .4rem ;
+            }
+            &:hover::after {
+                display: block;
+            }
+        }
+        .cp_wrapper {
+            width: 4rem;
+            height: 4rem;
+            margin-top: 1rem;
+            position: relative;
+            .foreColor {
+                position: absolute;
+                height: 2.5rem;
+                width: 2.5rem;
+                overflow: hidden;
+                display: grid;
+                place-items: center;
+                z-index: 2;
+                input{
+                    height: 200%;
+                    width: 200%;
+                }
+            }
+            .backColor {
+                position: absolute;
+                height: 2.5rem;
+                width: 2.5rem;
+                top: 1.2rem;
+                left: 1.2rem;
+                overflow: hidden;
+                display: grid;
+                place-items: center;
+                z-index: 1;
+                input{
+                    height: 200%;
+                    width: 200%;
+                }
+            }
+        }
+        
+    }
+    .canvasContainer {
+        flex: 2;
+        overflow: scroll;
+        position: relative;
+        background: #aaa;
+        scrollbar-color: darkgrey #555;
+        scrollbar-width: thin;
+        &::-webkit-scrollbar{
+            width: 10px;
+            height: 10px;
+            border-radius: 40px;
+            background: darkgrey;
+        }
+        &::-webkit-scrollbar-thumb {
+            background-color: #555;
+            border-radius: 20px;
+          }
+         #topCanvas{
+                position: absolute;
+                top: 0;
+                left: 0;
+                background: #666;
+                z-index: 2;
+            }
+            #leftCanvas{
+                position: absolute;
+                left: 0;
+                top: 0;
+                background: #666;
+                z-index: 2;
+            }
+            #cornerCanvas {
+                position: absolute;
+                top: 0;
+                left: 0;
+                background: #fff;
+                z-index: 100;
+            }
+            .editorContainer {
+                position: relative;
+                top: 15px;
+                left: 15px;
+                height: calc(100% - 15px);
+                width: calc(100% - 15px);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                #canvas{
+                    background: #fff;
+                }
+            }
+        #text {
+            position: absolute;
+            display: none;
+            height: 4rem;
+            width: 30rem;
+            font-size: 2rem;
+            border: .1rem dashed #000;
+            z-index: 5;
+            &:focus {
+                outline: none;
+                border: .1rem dashed #000;
+            }
+        }
+    }
+    
+}
+@media print {
+    body{
+        visibility: hidden;
+    }
+    #canvas {
+        visibility: visible;
+        top: .5rem;
+        left: .5rem;
+    }
+}
