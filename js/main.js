@@ -301,80 +301,84 @@ const storeDrawings = (e) => {
 let getCurrentPosition = (x, y) => {
     for (let i = 0; i < drawnObjects.length; i++) {
         let box = drawnObjects[i];
-        let midx = (box.x2 + box.x1) / 2;
-        let midy = (box.y2 + box.y1) / 2;
+        let boxX1 = box.x1 < box.x2 ? box.x1 : box.x2;
+        let boxY1 = box.y1 < box.y2 ? box.y1 : box.y2;
+        let boxX2 = box.x1 > box.x2 ? box.x1 : box.x2;
+        let boxY2 = box.y1 > box.y2 ? box.y1 : box.y2;
+        let midx = (boxX2 + boxX1) / 2;
+        let midy = (boxY2 + boxY1) / 2;
         let constName = box.constructor.name;
         if (constName == "Rectangle") {
-            if (box.x1 - anchrSize < x && x < box.x1 + anchrSize) {
-                if (box.y1 - anchrSize < y && y < box.y1 + anchrSize) {
+            if (boxX1 - anchrSize < x && x < boxX1 + anchrSize) {
+                if (boxY1 - anchrSize < y && y < boxY1 + anchrSize) {
                     return { index: i, constName: constName, pos: 'tl' };
-                } else if (box.y2 - anchrSize < y && y < box.y2 + anchrSize) {
+                } else if (boxY2 - anchrSize < y && y < boxY2 + anchrSize) {
                     return { index: i, constName: constName, pos: 'bl' };
                 } else if (midy - anchrSize < y && y < midy + anchrSize) {
                     return { index: i, constName: constName, pos: 'l' };
                 }
-            } else if (box.x2 - anchrSize < x && x < box.x2 + anchrSize) {
-                if (box.y1 - anchrSize < y && y < box.y1 + anchrSize) {
+            } else if (boxX2 - anchrSize < x && x < boxX2 + anchrSize) {
+                if (boxY1 - anchrSize < y && y < boxY1 + anchrSize) {
                     return { index: i, constName: constName, pos: 'tr' };
-                } else if (box.y2 - anchrSize < y && y < box.y2 + anchrSize) {
+                } else if (boxY2 - anchrSize < y && y < boxY2 + anchrSize) {
                     return { index: i, constName: constName, pos: 'br' };
                 } else if (midy - anchrSize < y && y < midy + anchrSize) {
                     return { index: i, constName: constName, pos: 'r' };
                 }
             } else if (midx - anchrSize < x && x < midx + anchrSize) {
-                if (box.y1 - anchrSize < y && y < box.y1 + anchrSize) {
+                if (boxY1 - anchrSize < y && y < boxY1 + anchrSize) {
                     return { index: i, constName: constName, pos: 't' };
-                } else if (box.y2 - anchrSize < y && y < box.y2 + anchrSize) {
+                } else if (boxY2 - anchrSize < y && y < boxY2 + anchrSize) {
                     return { index: i, constName: constName, pos: 'b' };
-                } else if (box.y1 - anchrSize < y && y < box.y2 + anchrSize) {
+                } else if (boxY1 - anchrSize < y && y < boxY2 + anchrSize) {
                     return { index: i, constName: constName, pos: 'i' };
                 }
-            } else if (box.x1 - anchrSize < x && x < box.x2 + anchrSize) {
-                if (box.y1 - anchrSize < y && y < box.y2 + anchrSize) {
+            } else if (boxX1 - anchrSize < x && x < boxX2 + anchrSize) {
+                if (boxY1 - anchrSize < y && y < boxY2 + anchrSize) {
                     return { index: i, constName: constName, pos: 'i' };
                 }
             }
         }
         else if (constName == "Line") {
-            let slope = (box.y2 - box.y1) / (box.x2 - box.x1);
-            let gx = x - box.x1;
-            if (y <= slope * gx + box.y1 + anchrSize && y >= slope * gx + box.y1 - anchrSize) {
-                if (x >= box.x1 - anchrSize && x <= box.x2 + anchrSize && y <= box.y2 + anchrSize && y >= box.y1 - anchrSize) {
+            let slope = (boxY2 - boxY1) / (boxX2 - boxX1);
+            let gx = x - boxX1;
+            if (y <= slope * gx + boxY1 + anchrSize && y >= slope * gx + boxY1 - anchrSize) {
+                if (x >= boxX1 - anchrSize && x <= boxX2 + anchrSize && y <= boxY2 + anchrSize && y >= boxY1 - anchrSize) {
                     return { index: i, constName: constName, pos: 'i' };
                 }
-            } else if (box.x1 - anchrSize < x && x < box.x1 + anchrSize) {
-                if (box.y1 - anchrSize < y && y < box.y1 + anchrSize) {
+            } else if (boxX1 - anchrSize < x && x < boxX1 + anchrSize) {
+                if (boxY1 - anchrSize < y && y < boxY1 + anchrSize) {
                     return { index: i, constName: constName, pos: 'tl' };
-                } else if (box.y2 - anchrSize < y && y < box.y2 + anchrSize) {
+                } else if (boxY2 - anchrSize < y && y < boxY2 + anchrSize) {
                     return { index: i, constName: constName, pos: 'bl' };
                 } else if (midy - anchrSize < y && y < midy + anchrSize) {
                     return { index: i, constName: constName, pos: 'l' };
                 }
-            } else if (box.x2 - anchrSize < x && x < box.x2 + anchrSize) {
-                if (box.y1 - anchrSize < y && y < box.y1 + anchrSize) {
+            } else if (boxX2 - anchrSize < x && x < boxX2 + anchrSize) {
+                if (boxY1 - anchrSize < y && y < boxY1 + anchrSize) {
                     return { index: i, constName: constName, pos: 'tr' };
-                } else if (box.y2 - anchrSize < y && y < box.y2 + anchrSize) {
+                } else if (boxY2 - anchrSize < y && y < boxY2 + anchrSize) {
                     return { index: i, constName: constName, pos: 'br' };
                 } else if (midy - anchrSize < y && y < midy + anchrSize) {
                     return { index: i, constName: constName, pos: 'r' };
                 }
             } else if (midx - anchrSize < x && x < midx + anchrSize) {
-                if (box.y1 - anchrSize < y && y < box.y1 + anchrSize) {
+                if (boxY1 - anchrSize < y && y < boxY1 + anchrSize) {
                     return { index: i, constName: constName, pos: 't' };
-                } else if (box.y2 - anchrSize < y && y < box.y2 + anchrSize) {
+                } else if (boxY2 - anchrSize < y && y < boxY2 + anchrSize) {
                     return { index: i, constName: constName, pos: 'b' };
-                } else if (box.y1 - anchrSize < y && y < box.y2 + anchrSize) {
+                } else if (boxY1 - anchrSize < y && y < boxY2 + anchrSize) {
                     return { index: i, constName: constName, pos: 'i' };
                 }
             }
         }
         else if (constName == "Ellipse") {
-            let xRadius = Math.sqrt(Math.pow(box.x2 - box.x1, 2));
-            let yRadius = Math.sqrt(Math.pow(box.y2 - box.y1, 2));
-            let x1 = box.x1 - (xRadius / 2);
-            let y1 = box.y1 - (yRadius / 2);
-            let x2 = box.x2 + (xRadius / 2);
-            let y2 = box.y2 + (yRadius / 2);
+            let xRadius = Math.sqrt(Math.pow(boxX2 - boxX1, 2));
+            let yRadius = Math.sqrt(Math.pow(boxY2 - boxY1, 2));
+            let x1 = boxX1 - (xRadius / 2);
+            let y1 = boxY1 - (yRadius / 2);
+            let x2 = boxX2 + (xRadius / 2);
+            let y2 = boxY2 + (yRadius / 2);
             let h = (x1 + x2) / 2;
             let k = (y1 + y2) / 2;
             let p = (Math.pow((x - h), 2)) / Math.pow(xRadius, 2) + (Math.pow((y - k), 2)) / Math.pow(yRadius, 2);
@@ -445,42 +449,28 @@ let getCurrentPosition = (x, y) => {
 // Control Points
 let drawControlPoints = (resize) => {
     if (resize.index != -1) {
-        let x1;
-        let y1;
-        let x2;
-        let y2;
-        let width;
-        let height;
-        if (resize.constName == "Rectangle") {
-            x1 = drawnObjects[resize.index].x1;
-            y1 = drawnObjects[resize.index].y1;
-            x2 = drawnObjects[resize.index].x2;
-            y2 = drawnObjects[resize.index].y2;
-            width = x2 - x1;
-            height = y2 - y1;
-            controlPoints(x1, y1, width, height);
-        }
-        else if (resize.constName == "Line") {
-            x1 = drawnObjects[resize.index].x1;
-            y1 = drawnObjects[resize.index].y1;
-            x2 = drawnObjects[resize.index].x2;
-            y2 = drawnObjects[resize.index].y2;
-            width = x2 - x1;
-            height = y2 - y1;
-            controlPoints(x1, y1, width, height);
-        }
-        else if (resize.constName == "Ellipse") {
-            let xRad = Math.sqrt(Math.pow(drawnObjects[resize.index].x2 - drawnObjects[resize.index].x1, 2)) / 2;
-            let yRad = Math.sqrt(Math.pow(drawnObjects[resize.index].y2 - drawnObjects[resize.index].y1, 2)) / 2;
-            x1 = drawnObjects[resize.index].x1 - xRad;
-            y1 = drawnObjects[resize.index].y1 - yRad;
-            x2 = drawnObjects[resize.index].x2 + xRad;
-            y2 = drawnObjects[resize.index].y2 + yRad;
-            width = x2 - x1;
-            height = y2 - y1;
-            controlPoints(x1, y1, width, height);
+        let box = drawnObjects[resize.index];
+        let boxX1 = box.x1 < box.x2 ? box.x1 : box.x2;
+        let boxY1 = box.y1 < box.y2 ? box.y1 : box.y2;
+        let boxX2 = box.x1 > box.x2 ? box.x1 : box.x2;
+        let boxY2 = box.y1 > box.y2 ? box.y1 : box.y2;
+        let width = boxX2 - boxX1;
+        let height = boxY2 - boxY1;
+        if (resize.constName == "Ellipse") {
+            let xRad = Math.sqrt(Math.pow(boxX2 - boxX1, 2)) / 2;
+            let yRad = Math.sqrt(Math.pow(boxY2 - boxY1, 2)) / 2;
+            boxX1 = boxX1 - xRad;
+            boxY1 = boxY1 - yRad;
+            boxX2 = boxX2 + xRad;
+            boxY2 = boxY2 + yRad;
+            width = boxX2 - boxX1;
+            height = boxY2 - boxY1;
         }
         else if (resize.constName == "Pencil") {
+            let x1;
+            let y1;
+            let x2;
+            let y2;
             for (let j = 0; j < drawnObjects[resize.index].pencilPoints.length; j++) {
                 if (j % 2 == 0) {
                     if (j == 0) {
@@ -505,10 +495,14 @@ let drawControlPoints = (resize) => {
                     }
                 }
             }
-            width = x2 - x1;
-            height = y2 - y1
-            controlPoints(x1, y1, width, height);
+            boxX1 = x1;
+            boxY1 = y1;
+            boxX2 = x2;
+            boxY2 = y2;
+            width = boxX2 - boxX1;
+            height = boxY2 - boxY1;
         }
+        controlPoints(boxX1, boxY1, width, height);
     }
 }
 
