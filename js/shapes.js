@@ -22,7 +22,7 @@
 function Pencil() {
     this.x1 = x1;
     this.y1 = y1;
-    this.strokeColor = strokeColor;
+    this.strokeColor = "#000";
     this.lineWidth = lineWidth;
     this.pencilPoints = pencilPoints;
     this.draw = () => {
@@ -43,8 +43,8 @@ function Line() {
     this.y1 = y1;
     this.x2 = x2;
     this.y2 = y2;
-    this.strokeColor = strokeColor;
-    this.lineWidth = lineWidth;
+    this.strokeColor = "#000";
+    this.lineWidth = 1;
     this.draw = () => {
         // Setting Starting Point of line
         ctx.beginPath();
@@ -63,9 +63,9 @@ function Curve() {
     this.y1 = y1;
     this.x2 = x2;
     this.y2 = y2;
-    this.fillMode = fillMode;
+    this.fillMode = "stroke";
     this.fillColor = fillColor;
-    this.strokeColor = strokeColor;
+    this.strokeColor = "#000";
     this.lineWidth = lineWidth;
     this.draw = () => {
         let dx = this.x2 - this.x1;
@@ -96,9 +96,9 @@ function Rectangle() {
     this.y1 = y1;
     this.x2 = x2;
     this.y2 = y2;
-    this.fillMode = fillMode;
+    this.fillMode = "stroke";
     this.fillColor = fillColor;
-    this.strokeColor = strokeColor;
+    this.strokeColor = "#000";
     this.lineWidth = lineWidth;
     this.draw = () => {
         let width = this.x2 - this.x1;
@@ -129,9 +129,9 @@ function Ellipse() {
     this.y1 = y1;
     this.x2 = x2;
     this.y2 = y2;
-    this.fillMode = fillMode;
+    this.fillMode = "stroke";
     this.fillColor = fillColor;
-    this.strokeColor = strokeColor;
+    this.strokeColor = "#000";
     this.lineWidth = lineWidth;
     this.draw = () => {
         let xRadius = Math.sqrt(Math.pow(this.x2 - this.x1, 2));

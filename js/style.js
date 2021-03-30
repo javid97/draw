@@ -24,13 +24,9 @@ let styleBtn = className => {
     buttons.forEach(btn => {
         if (btn.classList.contains(className)) {
             btn.classList.add('activeBtn');
-            shapeTools.style.display = "none";
-            textTools.style.display = 'flex';
             
         } else {
             btn.classList.remove('activeBtn');
-            shapeTools.style.display = "flex";
-            textTools.style. display = 'none';;
         }
     });
 }

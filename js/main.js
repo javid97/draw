@@ -4,17 +4,12 @@ const container = document.querySelector('.container');
 let undo = document.querySelector('.undo');
 let redo = document.querySelector('.redo');
 let undoRedoErr = document.querySelector('.undoRedoErr');
-let fontName = document.querySelector('.fontName');
-let fontSize = document.querySelector('.fontSize');
 let fileInput = document.getElementById('fileInput');
-let text = document.getElementById('text');
 let textBtn = document.querySelector('.text');
-let shapeTools = document.querySelector('.shapeTools');
-let textTools = document.querySelector('.textTools');
 let textColor = document.getElementById('textColor');
 //setting height and width to the canvas
-canvas.width = (window.innerWidth / 100) * 80 - 300;
-canvas.height = window.innerHeight - 250;
+canvas.width = (window.innerWidth / 100) * 78;
+canvas.height =  (window.innerHeight / 100) * 84;
 const ctx = canvas.getContext('2d');
 
 
@@ -26,54 +21,58 @@ const leftCtx = leftCanvas.getContext("2d");
 
 
 //topCanvas
-cornerCanvas.height = 15;
-cornerCanvas.width = 15;
-topCanvas.width = canvas.width + canvas.offsetLeft + 15 + 200;
-topCanvas.height = 15;
-leftCanvas.width = 15;
-leftCanvas.height = canvas.height + canvas.offsetTop + 15 + 200;
+cornerCanvas.height = 20;
+cornerCanvas.width = 20;
+topCanvas.width = canvas.width + 20;//(window.innerWidth / 100) * 78;
+topCanvas.height = 20;
+leftCanvas.width = 20;
+leftCanvas.height = canvas.height + 15;//(window.innerHeight / 100) * 86;
 
 let Ruler = () => {
     let a = 0;
     let b = 0;
-    for (let i = 0; i <= canvas.width; i++) {
+    for (let i = 0; i <= topCanvas.width; i++) {
         if (i % 5 == 0) {
             if (i % 50 == 0) {
-                scale(topCtx, i, canvas, topCanvas, 15);
+                scale(topCtx, i, canvas, topCanvas, 20);
                 topCtx.closePath();
                 topCtx.font = "9px tahoma";
-                topCtx.fillStyle = "#efefef";
-                topCtx.fillText(a.toString(), i + 2 + canvas.offsetLeft + 15, 9);
+                topCtx.fillStyle = "#b3b3b3";
+                topCtx.fillText(a.toString(), i + 2, 9);
                 a += 50;
-            } else if (i % 10 == 0) { scale(topCtx, i, canvas, topCanvas, 5); }
-            else { scale(topCtx, i, canvas, topCanvas, 3); }
+            } else if (i % 10 == 0) { scale(topCtx, i, canvas, topCanvas, 7); }
+            else { scale(topCtx, i, canvas, topCanvas, 10); }
         }
     }
-    for (let i = 0; i <= canvas.height; i++) {
+    for (let i = 0; i <= leftCanvas.height; i++) {
         if (i % 5 == 0) {
             if (i % 50 == 0) {
-                scale(leftCtx, i, canvas, leftCanvas, 15);
+                scale(leftCtx, i, canvas, leftCanvas, 20);
+                leftCtx.save();
+                leftCtx.translate(2,i + 12);
+                leftCtx.rotate(-0.5*Math.PI);
                 leftCtx.font = "9px tahoma";
-                leftCtx.fillStyle = "#fff";
+                leftCtx.fillStyle ="#071a88";// "#b3b3b3";
                 leftCtx.textBaseline = "top";
-                leftCtx.fillText(b.toString(), 0, canvas.offsetTop + i + 17);
+                leftCtx.fillText(b.toString(), 0, 0);
+                leftCtx.restore();
                 b += 50;
-            } else if (i % 10 == 0) { scale(leftCtx, i, canvas, leftCanvas, 5); }
-            else { scale(leftCtx, i, canvas, leftCanvas, 3); }
+            } else if (i % 10 == 0) { scale(leftCtx, i, canvas, leftCanvas, 7); }
+            else { scale(leftCtx, i, canvas, leftCanvas, 10); }
         }
     }
 }
 let scale = (context, index, sourceCanvas, targetCanvas, lineHeight) => {
     context.beginPath();
-    context.lineWidth = 1;
+    context.lineWidth = 1.5;
     if (context == leftCtx) {
-        context.moveTo(targetCanvas.width, index + sourceCanvas.offsetTop + 15);
-        context.lineTo(targetCanvas.width - lineHeight, index + sourceCanvas.offsetTop + 15);
+        context.moveTo(targetCanvas.width, index + 15);
+        context.lineTo(targetCanvas.width - lineHeight, index + 15);
     } else {
-        context.moveTo(index + sourceCanvas.offsetLeft + 15, targetCanvas.height);
-        context.lineTo(index + sourceCanvas.offsetLeft + 15, targetCanvas.height - lineHeight);
+        context.moveTo(index, targetCanvas.height);
+        context.lineTo(index, targetCanvas.height - lineHeight);
     }
-    context.strokeStyle = "#fff";
+    context.strokeStyle = "#b3b3b3";
     context.stroke();
     context.closePath();
 }
@@ -233,10 +232,6 @@ const drawing = (e1) => {
         reDraw();
         x2 = e1.offsetX;
         y2 = e1.offsetY;
-        fillMode = Stroke.value;
-        fillColor = FillColor.value;
-        strokeColor = StrokeColor.value;
-        lineWidth = LineWidth.value;
         drawingMode();
     }
     else if (mousedown && resize.index != -1) {
@@ -287,10 +282,6 @@ const storeDrawings = (e) => {
     mousedown = false;
     x2 = e.offsetX;
     y2 = e.offsetY;
-    fillMode = Stroke.value;
-    fillColor = FillColor.value;
-    strokeColor = StrokeColor.value;
-    lineWidth = LineWidth.value;
     draw();
     reDraw();
     pencilPoints = [];
@@ -454,8 +445,6 @@ let drawControlPoints = (resize) => {
         let boxY1 = box.y1 < box.y2 ? box.y1 : box.y2;
         let boxX2 = box.x1 > box.x2 ? box.x1 : box.x2;
         let boxY2 = box.y1 > box.y2 ? box.y1 : box.y2;
-        let width = boxX2 - boxX1;
-        let height = boxY2 - boxY1;
         if (resize.constName == "Ellipse") {
             let xRad = Math.sqrt(Math.pow(boxX2 - boxX1, 2)) / 2;
             let yRad = Math.sqrt(Math.pow(boxY2 - boxY1, 2)) / 2;
@@ -463,45 +452,35 @@ let drawControlPoints = (resize) => {
             boxY1 = boxY1 - yRad;
             boxX2 = boxX2 + xRad;
             boxY2 = boxY2 + yRad;
-            width = boxX2 - boxX1;
-            height = boxY2 - boxY1;
         }
         else if (resize.constName == "Pencil") {
-            let x1;
-            let y1;
-            let x2;
-            let y2;
             for (let j = 0; j < drawnObjects[resize.index].pencilPoints.length; j++) {
                 if (j % 2 == 0) {
                     if (j == 0) {
-                        x1 = drawnObjects[resize.index].pencilPoints[0].x;
-                        x2 = drawnObjects[resize.index].pencilPoints[drawnObjects[resize.index].pencilPoints.length - 1].x;
+                        boxX1 = drawnObjects[resize.index].pencilPoints[0].x;
+                        boxX2 = drawnObjects[resize.index].pencilPoints[drawnObjects[resize.index].pencilPoints.length - 1].x;
                     } else {
-                        if (x1 < drawnObjects[resize.index].pencilPoints[j].x) { x1 = x1; }
-                        else { x1 = drawnObjects[resize.index].pencilPoints[j].x; }
-                        if (x2 < drawnObjects[resize.index].pencilPoints[j].x) { x2 = drawnObjects[resize.index].pencilPoints[j].x; }
-                        else { x2 = x2; }
+                        if (boxX1 < drawnObjects[resize.index].pencilPoints[j].x) { boxX1 = boxX1; }
+                        else { boxX1 = drawnObjects[resize.index].pencilPoints[j].x; }
+                        if (boxX2 < drawnObjects[resize.index].pencilPoints[j].x) { boxX2 = drawnObjects[resize.index].pencilPoints[j].x; }
+                        else { boxX2 = boxX2; }
                     }
                 }
                 else {
                     if (j == 1) {
-                        y1 = drawnObjects[resize.index].pencilPoints[0].y;
-                        y2 = drawnObjects[resize.index].pencilPoints[drawnObjects[resize.index].pencilPoints.length - 1].y;
+                        boxY1 = drawnObjects[resize.index].pencilPoints[0].y;
+                        boxY2 = drawnObjects[resize.index].pencilPoints[drawnObjects[resize.index].pencilPoints.length - 1].y;
                     } else {
-                        if (y1 < drawnObjects[resize.index].pencilPoints[j].y) { y1 = y1; }
-                        else { y1 = drawnObjects[resize.index].pencilPoints[j].y; }
-                        if (y2 < drawnObjects[resize.index].pencilPoints[j].y) { y2 = drawnObjects[resize.index].pencilPoints[j].y; }
-                        else { y2 = y2; }
+                        if (boxY1 < drawnObjects[resize.index].pencilPoints[j].y) { boxY1 = boxY1; }
+                        else { boxY1 = drawnObjects[resize.index].pencilPoints[j].y; }
+                        if (boxY2 < drawnObjects[resize.index].pencilPoints[j].y) { boxY2 = drawnObjects[resize.index].pencilPoints[j].y; }
+                        else { boxY2 = boxY2; }
                     }
                 }
             }
-            boxX1 = x1;
-            boxY1 = y1;
-            boxX2 = x2;
-            boxY2 = y2;
-            width = boxX2 - boxX1;
-            height = boxY2 - boxY1;
         }
+        let width = boxX2 - boxX1;
+        let height = boxY2 - boxY1;
         controlPoints(boxX1, boxY1, width, height);
     }
 }
@@ -509,8 +488,9 @@ let drawControlPoints = (resize) => {
 const controlPoints = (x1, y1, width, height) => {
     let anchrSize = 3;
     ctx.save();
-    ctx.setLineDash([5, 5]);
+    ctx.setLineDash([4,3]);
     ctx.strokeStyle = "Blue";
+    ctx.lineWidth = 2;
     ctx.rect(x1, y1, width, height);
     ctx.stroke();
     ctx.restore();
@@ -568,6 +548,11 @@ text.addEventListener('keypress', (e) => {
 canvas.addEventListener("mousedown", startDraw);
 canvas.addEventListener("mousemove", drawing);
 canvas.addEventListener("mouseup", storeDrawings);
+window.addEventListener('resize',() => {
+    canvas.width = (window.innerWidth / 100) * 80 - 200;
+    canvas.height = window.innerHeight - 250;
+    Ruler();
+})
 
 // Touch Events
 // canvas.addEventListener('touchstart', startDraw);

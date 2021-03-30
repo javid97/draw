@@ -13,7 +13,15 @@
 
 <body>
     <div class="wrapper">
-        <div class="shapeTools">
+        <div class="menus">
+            <ul>
+                <li>File</li>
+                <li>Edit</li>
+                <li>View</li>
+                <li>Object</li>
+            </ul>
+        </div>
+        <!-- <div class="shapeTools">
             <select name="stroke" id="stroke" class="select">
                 <option value="fill">Fill</option>
                 <option value="stroke-fill">Stroke & Fill</option>
@@ -70,7 +78,7 @@
                 <label class="background">A</label>
                 <input type="color" value="#88ff88" id="textColor" />
             </div>
-        </div>
+        </div> -->
         <div class="undoRedoErr">Undo: Reached its final</div>
         <div class="container">
             <div class="tools">
@@ -80,9 +88,24 @@
                 <button data-title="Redo" class="button redo">&#10559;</button>
                 <button data-title="Eraser" class="button dButton eraser"><i class="fas fa-eraser"></i></button>
                 <button data-title="Pencil" class="button dButton pencil">&#9998;</button>
-                <button data-title="Text" class="button dButton text">&#016;</button>
+                <button data-title="Text" class="button dButton text">T</button>
                 <button data-title="Line" class="button dButton line">/</button>
                 <button data-title="Rectangle" class="button dButton rectangle">&#9723;</button>
+                <button data-title="Polygon" class="button dButton polygon">&#11040;</button>
+                <div class="polygonOptions">
+                    <button class="polygonOpt pentagon" style="--i: 0.1">&#11040;</button>
+                    <button class="polygonOpt hexagon" style="--i: 0.2">&#11041;</button>
+                    <button class="polygonOpt heptagon" style="--i: 0.3">&#x2B22;</button>
+                    <button class="polygonOpt octagon" style="--i: 0.4">&#112043;</button>
+                    <button class="polygonOpt nanagon" style="--i: 0.5">&#11044;</button>
+                    <button class="polygonOpt decagon" style="--i: 0.6">&#11045;</button>
+                    <button class="polygonOpt star5"></button>
+                    <button class="polygonOpt star6"></button>
+                    <button class="polygonOpt star7"></button>
+                    <button class="polygonOpt star8"></button>
+                    <button class="polygonOpt star9"></button>
+                    <button class="polygonOpt star10"></button>
+                </div>
                 <button data-title="Ellipse" class="button dButton ellipse">&#11053;</button>
                 <button data-title="Curve" class="button dButton curve">&#8275;</button>
                 <div class="cp_wrapper">
@@ -95,13 +118,77 @@
                 </div>
             </div>
             <div class="canvasContainer">
-                <canvas id="topCanvas"></canvas>
                 <canvas id="leftCanvas"></canvas>
+                <canvas id="topCanvas"></canvas>
                 <canvas id="cornerCanvas"></canvas>
                 <div class="editorContainer">
                     <canvas id="canvas"></canvas>
                 </div>
                 <div id="text" class="textInput" contenteditable="true"></div>
+            </div>
+            <div class="toolbar">
+                <div class="editor-tools">
+                    <h1>Canvas Tools</h1>
+                    <div class="canvas-tools">
+                        <div class="height tool">
+                            <label>Height</label>
+                            <input type="text" name="" class="height" id="">
+                        </div>
+                        <div class="width tool">
+                            <label>Width</label>
+                            <input type="text" name="" class="width" id="">
+                        </div>
+                        <div class="background tool">
+                            <label>Background</label>
+                            <input type="color" value="#ffffff" name="" id="">
+                        </div>
+                        <div class="opacity tool">
+                            <label for="">Opacity</label>
+                            <input type="text" name="" class="opacity" id="">
+                        </div>
+                    </div>
+                </div>
+                <div class="editor-tools">
+                    <h1>Canvas Tools</h1>
+                    <div class="canvas-tools">
+                        <div class="x tool">
+                            <label>X</label>
+                            <input type="text" name="" class="height" id="">
+                        </div>
+                        <div class="y tool">
+                            <label>Y</label>
+                            <input type="text" name="" class="width" id="">
+                        </div>
+                        <div class="height tool">
+                            <label>Height</label>
+                            <input type="text" name="" class="height" id="">
+                        </div>
+                        <div class="width tool">
+                            <label>Width</label>
+                            <input type="text" name="" class="width" id="">
+                        </div>
+                        <div class="rotation tool">
+                            <label>Rotation</label>
+                            <input type="text" value="" name="" id="">
+                        </div>
+                        <div class="opacity tool">
+                            <label for="">Opacity</label>
+                            <input type="text" name="" class="opacity" id="">
+                        </div>
+                        <div class="stroke-width tool">
+                            <label>Stroke Width</label>
+                            <input type="text" name="" value="1" class="height" id="">
+                        </div>
+                        <div class="stroke-style tool">
+                            <label>Stroke Style</label>
+                            <select name="" id="">
+                                <option value=""></option>
+                                <option value="">.</option>
+                                <option value=""></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

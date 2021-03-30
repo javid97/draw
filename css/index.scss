@@ -1,4 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
+$primary:  #37474f;
+$secondary:#92967d;//#03506f;
+$surface:#a6f0c6;//#cfcfcf;
+$error: #B00020;
+
 * {
     margin: 0;
     padding: 0;
@@ -9,7 +14,7 @@ html {
     font-size: 62.5%;
 }
 body {
-    background: #ccc;
+    background: $primary;
     height: 100vh;
     width: 100vw;
     overflow: hidden;
@@ -17,6 +22,31 @@ body {
 .wrapper {
     height: 100%;
     width: 100%;
+    .menus {
+        width: 80%;
+        height: 5rem;
+        margin-left: 2rem;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+
+        ul{
+            display: flex;
+            flex-direction: row;
+            gap: 1rem;
+            li{
+                list-style: none;
+                color: $surface;
+                font-size: 1.6rem;
+                display: grid;
+                place-items: center;
+                border-radius: .5rem;
+                height: 3rem;
+                width: 8rem;
+                box-shadow: inset -.2rem -.2rem .4rem darken($primary,50%), inset .2rem .2rem .4rem lighten($primary,50%);
+            }
+        }
+    }
 }
 
 .undoRedoErr {
@@ -26,9 +56,9 @@ body {
     transform: translate(-50%,-50%);
     height: 40px;
     width: 300px;
-    background: #f33;
+    background: $error;
     font-size: 20px;
-    color: #fff;
+    color: $surface;
     display: none;
     z-index: 20;
     place-items: center;
@@ -115,37 +145,35 @@ body {
     display: flex;
     position: relative;
     flex-direction: row;
-    width: 80%;
-    margin: 0 auto;
+    width: 100%;
+    gap: .5rem;
+    //margin: 0 auto;
     height: calc(100% - 9rem);
     .tools {
-        width: 5rem;
+        width: 8rem;
         display: flex;
         align-items: center;
         flex-direction: column;
         gap: .5rem;
-        .activeBtn{
-            background: dodgerblue;
-            color: #fff;
-        }
         .button {
-            height: 3rem;
-            width: 3rem;
+            height: 3.5rem;
+            width: 3.5rem;
             font-size: 2rem;
             font-weight: bolder;
             position: relative;
+            background: $primary;
+            color: $surface;
             border-radius: 50%;
             border: none;
             outline: none;
-            box-shadow: .2rem .2rem 1rem #111;
-            
+            box-shadow: inset 3px 3px 8px lighten($primary, 50%), inset -3px -3px 8px darken($primary, 100%);  
             &::after {
                 content: attr(data-title);
                 position: absolute;
                 height: 2rem;
                 width: 10rem;
-                background: rgba(1,1,1,.7);
-                color: #fff;
+                background: rgba(03,50,65,.7);
+                color: $surface;
                 left: 100%;
                 top: .5rem;
                 line-height: 2rem;
@@ -159,6 +187,54 @@ body {
                 display: block;
             }
         }
+        .activeBtn{
+            background: #31326f;
+            color: #ffc93c;
+        }
+        .polygon:focus + .polygonOptions{
+            display: grid;
+        }
+        .polygonOptions{
+            position: absolute;
+            top: 32rem;
+            left: 8rem;
+            display: none;
+            background: $primary;
+            border: .2rem solid $primary;
+            padding: 1rem;
+            grid-template-rows: 4rem;
+            border-radius: 1rem;
+            grid-template-columns: repeat(auto-fit, 3rem);
+            box-shadow: inset .2rem .2rem .7rem darken($primary, 100%), inset -.2rem -.2rem .7rem lighten($primary, 50%);
+            gap: .5rem;
+            width: 20rem;
+            z-index: 100;
+            &::before {
+                content: "";
+                position: absolute;
+                top: .5rem;
+                left: -2.5rem;
+                border-top: 1rem solid transparent;
+                border-bottom: 1rem solid transparent;
+                border-right: 2.5rem solid darken($primary, 20%);
+                z-index: 0;
+            }
+            .polygonOpt{
+                border: none;
+                font-size: 2rem;
+                height: 3rem;
+                width: 3rem;
+                color: $surface;
+                background: $primary;
+                box-shadow: inset 4px 4px 7px lighten($primary, 50%), inset -4px -4px 10px darken($primary, 100%);
+                text-align: center;
+                border-radius: 50%;
+
+                &:focus{
+                    outline: none;
+                }
+            }
+        }
         .cp_wrapper {
             width: 4rem;
             height: 4rem;
@@ -166,8 +242,8 @@ body {
             position: relative;
             .foreColor {
                 position: absolute;
-                height: 2.5rem;
-                width: 2.5rem;
+                height: 3rem;
+                width: 3rem;
                 overflow: hidden;
                 display: grid;
                 place-items: center;
@@ -179,13 +255,14 @@ body {
             }
             .backColor {
                 position: absolute;
-                height: 2.5rem;
-                width: 2.5rem;
-                top: 1.2rem;
-                left: 1.2rem;
+                height: 3rem;
+                width: 3rem;
+                top: 1.5rem;
+                left: 1.5rem;
                 overflow: hidden;
                 display: grid;
                 place-items: center;
+                box-shadow: 2px 2px 2px #5f0345;
                 z-index: 1;
                 input{
                     height: 200%;
@@ -196,54 +273,57 @@ body {
         
     }
     .canvasContainer {
-        flex: 2;
-        overflow: scroll;
+        width:  calc(100% - 35rem);
         position: relative;
-        background: #aaa;
-        scrollbar-color: darkgrey #555;
-        scrollbar-width: thin;
-        &::-webkit-scrollbar{
-            width: 10px;
-            height: 10px;
-            border-radius: 40px;
-            background: darkgrey;
-        }
-        &::-webkit-scrollbar-thumb {
-            background-color: #555;
-            border-radius: 20px;
-          }
-         #topCanvas{
-                position: absolute;
-                top: 0;
-                left: 0;
-                background: #666;
-                z-index: 2;
+        overflow: hidden;
+        border-radius: 10px;
+        background: $primary;
+        border: 2px solid darken($primary, 10%);
+        //box-shadow: -8px -8px 8px #f8f8f8, 5px 5px 10px #888;
+          #leftCanvas{
+            position: absolute;
+            left: 0;
+            top: 5px;
+            background: $primary;
+            z-index: 1;
             }
-            #leftCanvas{
+            #topCanvas{
                 position: absolute;
-                left: 0;
                 top: 0;
-                background: #666;
-                z-index: 2;
+                left: 20px;
+                background: $primary;
+                z-index: 1;
             }
             #cornerCanvas {
-                position: absolute;
-                top: 0;
-                left: 0;
-                background: #fff;
+                position: fixed;
+                top: 50px;
+                left:204px;
+                display: none;
+                background: $secondary;
                 z-index: 100;
             }
             .editorContainer {
                 position: relative;
-                top: 15px;
-                left: 15px;
-                height: calc(100% - 15px);
-                width: calc(100% - 15px);
-                display: flex;
-                align-items: center;
-                justify-content: center;
+                overflow: scroll;
+                height: 100%;
+                width: 100%;
+                scrollbar-color: $secondary;
+                scrollbar-width: thin;
+                &::-webkit-scrollbar{
+                    width: 10px;
+                    height: 10px;
+                    border-radius: 40px;
+                    background: $primary;
+                }
+                &::-webkit-scrollbar-thumb {
+                    background-color: $secondary;
+                    border-radius: 20px;
+                  }
                 #canvas{
+                    margin-left: 20px;
+                    margin-top: 20px;   
                     background: #fff;
+                    z-index: 0;
                 }
             }
         #text {
@@ -257,6 +337,63 @@ body {
             &:focus {
                 outline: none;
                 border: .1rem dashed #000;
+            }
+        }
+    }
+    .toolbar {
+        width: 20rem;
+        height: 100%;
+        margin-left: 1rem;
+        border-radius: 1rem;
+        //box-shadow: inset .5rem .5rem 1rem lighten($primary, 30%),inset -.5rem -.5rem 1rem darken($primary, 50%);
+        .editor-tools{
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            h1{
+                font-size: 2.5rem;
+                font-weight: bold;
+                color: $primary;
+                text-shadow: .1rem .1rem .1rem darken($primary, 50%), -.1rem -.1rem .1rem lighten($primary, 30%);
+            }
+            .canvas-tools {
+                display: grid;
+                grid-template-columns: repeat(auto-fit,minmax(8rem, 8rem));
+                gap: 1rem;
+                .tool{
+                    display: flex;
+                    flex-direction: column;
+                    padding: .5rem;
+                    box-shadow: inset .3rem .3rem .5rem lighten($primary, 30%),inset -.3rem -.3rem .5rem darken($primary, 50%);
+                    //background: darken($primary,5%);
+                    width: 8.5rem;
+                    height: 6rem;
+                    gap: .5rem;
+                    border-radius: .5rem;
+                    justify-content: center;
+                    align-items: center;
+                }
+                label{
+                    font-size: 1.2rem;
+                    color: $surface;
+                }
+                select,input {
+                    width: 6rem;
+                    height: 2rem;
+                    border: none;
+                    border-radius: .3rem;
+                    text-align: center;
+                    color: $surface;
+                    background: $primary;
+                    box-shadow: inset -.2rem -.2rem .5rem lighten($primary, 30%), inset .2rem .2rem .5rem darken($primary, 50%);
+                    &:focus {
+                        outline: none;
+                        border: none;
+                    }
+                }
+                input [type = "color"]{
+                    transform: scale(2);
+                }
             }
         }
     }
