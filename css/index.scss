@@ -305,6 +305,8 @@ body {
             .editorContainer {
                 position: relative;
                 overflow: scroll;
+                display: grid;
+                place-items: center;
                 height: 100%;
                 width: 100%;
                 scrollbar-color: $secondary;
@@ -319,9 +321,9 @@ body {
                     background-color: $secondary;
                     border-radius: 20px;
                   }
-                #canvas{
-                    margin-left: 20px;
-                    margin-top: 20px;   
+                #canvas{ 
+                    transition: .5s all ease-in-out;
+                    margin: 2rem;  
                     background: #fff;
                     z-index: 0;
                 }
@@ -363,7 +365,6 @@ body {
                 .tool{
                     display: flex;
                     flex-direction: column;
-                    padding: .5rem;
                     box-shadow: inset .3rem .3rem .5rem lighten($primary, 30%),inset -.3rem -.3rem .5rem darken($primary, 50%);
                     //background: darken($primary,5%);
                     width: 8.5rem;

@@ -21,64 +21,6 @@
                 <li>Object</li>
             </ul>
         </div>
-        <!-- <div class="shapeTools">
-            <select name="stroke" id="stroke" class="select">
-                <option value="fill">Fill</option>
-                <option value="stroke-fill">Stroke & Fill</option>
-                <option value="no-fill">No-Fill</option>
-            </select>
-            <select name="lineWidth" id="lineWidth" class="size">
-                <option value="2">2</option>
-                <option value="4">4</option>
-                <option value="6">6</option>
-                <option value="8">8</option>
-                <option value="10">10</option>
-                <option value="12">12</option>
-                <option value="14">14</option>
-                <option value="16">16</option>
-            </select>
-        </div>
-        <div class="textTools">
-            <select onchange="setTextFontFamily(this[this.selectedIndex].value)" class="fontName">
-                <option value="Arial">Arial</option>
-                <option value="Tahoma">Tahoma</option>
-                <option value="Calibri">Calibri</option>
-                <option value="Serif">Serif</option>
-                <option value="cooper black">cooper black</option>
-                <option value="Algeria">Algeria</option>
-                <option value="Castellar">Castellar</option>
-                <option value="stencil">stencil</option>
-                <option value="Wide Latin">Wide Latin</option>
-            </select>
-            <select onchange="setTextFontSize(this.value)" class="fontSize">
-                <option value="14">14</option>
-                <option value="15">15</option>
-                <option value="16">16</option>
-                <option value="17">17</option>
-                <option value="18">18</option>
-                <option value="19">19</option>
-                <option value="20">20</option>
-                <option value="21">21</option>
-                <option value="22">22</option>
-                <option value="23">23</option>
-                <option value="24">24</option>
-                <option value="25">25</option>
-                <option value="26">26</option>
-                <option value="27">27</option>
-                <option value="28">28</option>
-                <option value="30">30</option>
-                <option value="36">36</option>
-                <option value="42">42</option>
-                <option value="50">50</option>
-                <option value="60">60</option>
-                <option value="72">72</option>
-                <option value="80">80</option>
-            </select>
-            <div class="cp_wrapper">
-                <label class="background">A</label>
-                <input type="color" value="#88ff88" id="textColor" />
-            </div>
-        </div> -->
         <div class="undoRedoErr">Undo: Reached its final</div>
         <div class="container">
             <div class="tools">
@@ -132,59 +74,63 @@
                     <div class="canvas-tools">
                         <div class="height tool">
                             <label>Height</label>
-                            <input type="text" name="" class="height" id="">
+                            <input type="text" name="" class="canvas-height" id="canvas-height">
                         </div>
                         <div class="width tool">
                             <label>Width</label>
-                            <input type="text" name="" class="width" id="">
+                            <input type="text" name="" class="canvas-width" id="canvas-width">
                         </div>
                         <div class="background tool">
                             <label>Background</label>
-                            <input type="color" value="#ffffff" name="" id="">
+                            <input type="color" value="#ffffff" name="" id="canvas-background">
                         </div>
                         <div class="opacity tool">
                             <label for="">Opacity</label>
-                            <input type="text" name="" class="opacity" id="">
+                            <input type="text" value="0" class="canvas-opacity" id="canvas-opacity">
                         </div>
                     </div>
                 </div>
                 <div class="editor-tools">
-                    <h1>Canvas Tools</h1>
+                    <h1 class="tools-title">Canvas Tools</h1>
                     <div class="canvas-tools">
                         <div class="x tool">
                             <label>X</label>
-                            <input type="text" name="" class="height" id="">
+                            <input type="text" name="" class="x" id="x">
                         </div>
                         <div class="y tool">
                             <label>Y</label>
-                            <input type="text" name="" class="width" id="">
+                            <input type="text" name="" class="y" id="y">
                         </div>
                         <div class="height tool">
                             <label>Height</label>
-                            <input type="text" name="" class="height" id="">
+                            <input type="text" name="" class="height" id="height">
                         </div>
                         <div class="width tool">
                             <label>Width</label>
-                            <input type="text" name="" class="width" id="">
+                            <input type="text" name="" class="width" id="width">
                         </div>
                         <div class="rotation tool">
                             <label>Rotation</label>
-                            <input type="text" value="" name="" id="">
+                            <input type="text" value="0" name="" id="rotation">
                         </div>
                         <div class="opacity tool">
                             <label for="">Opacity</label>
-                            <input type="text" name="" class="opacity" id="">
+                            <input type="text" value="1" class="opacity" id="opacity">
+                        </div>
+                        <div class="blur tool">
+                            <label>Blur</label>
+                            <input type="text" value="0" name="" id="blur">
                         </div>
                         <div class="stroke-width tool">
                             <label>Stroke Width</label>
-                            <input type="text" name="" value="1" class="height" id="">
+                            <input type="text" name="" value="1" class="stroke" id="stroke-width">
                         </div>
                         <div class="stroke-style tool">
                             <label>Stroke Style</label>
-                            <select name="" id="">
-                                <option value=""></option>
-                                <option value="">.</option>
-                                <option value=""></option>
+                            <select name="" id="stroke-style">
+                                <option default value="line">______</option>
+                                <option value="dashed">.</option>
+                                <option value="dotted"></option>
                             </select>
                         </div>
                     </div>

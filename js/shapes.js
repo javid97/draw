@@ -39,30 +39,37 @@ function Pencil() {
 
 // Defining Line
 function Line() {
-    this.x1 = x1;
-    this.y1 = y1;
-    this.x2 = x2;
-    this.y2 = y2;
+    this.x1 = x1 < x2 ? x1 : x2;
+    this.y1 = y1 < y2 ? y1 : y2;
+    this.x2 = x1 > x2 ? x1 : x2;
+    this.y2 = y1 > y2 ? y1 : y2;
+    this.globalAlpha = 1;
+    this.angle = 0;
     this.strokeColor = "#000";
     this.lineWidth = 1;
     this.draw = () => {
-        // Setting Starting Point of line
         ctx.beginPath();
-        ctx.moveTo(this.x1, this.y1);
-        // Setting final Point of line
-        ctx.lineTo(this.x2, this.y2);
+        ctx.save();
+        ctx.translate(this.x1,this.y1);
+        ctx.rotate(this.angle * (Math.PI / 180));
+        ctx.moveTo(0, 0);
+        ctx.lineTo(this.x2 - this.x1, this.y2 - this.y1);
+        ctx.globalAlpha = this.globalAlpha;
         ctx.lineWidth = this.lineWidth;
         ctx.strokeStyle = this.strokeColor;
         ctx.stroke();
+        ctx.restore();
     }
 }
 
 // Defining Curve
 function Curve() {
-    this.x1 = x1;
-    this.y1 = y1;
-    this.x2 = x2;
-    this.y2 = y2;
+    this.x1 = x1 < x2 ? x1 : x2;
+    this.y1 = y1 < y2 ? y1 : y2;
+    this.x2 = x1 > x2 ? x1 : x2;
+    this.y2 = y1 > y2 ? y1 : y2;
+    this.globalAlpha = 1;
+    this.angle = 0;
     this.fillMode = "stroke";
     this.fillColor = fillColor;
     this.strokeColor = "#000";
@@ -92,10 +99,12 @@ function Curve() {
 
 //Defining Rectangle
 function Rectangle() {
-    this.x1 = x1;
-    this.y1 = y1;
-    this.x2 = x2;
-    this.y2 = y2;
+    this.x1 = x1 < x2 ? x1 : x2;
+    this.y1 = y1 < y2 ? y1 : y2;
+    this.x2 = x1 > x2 ? x1 : x2;
+    this.y2 = y1 > y2 ? y1 : y2;
+    this.globalAlpha = 1;
+    this.angle = 0;
     this.fillMode = "stroke";
     this.fillColor = fillColor;
     this.strokeColor = "#000";
@@ -104,7 +113,11 @@ function Rectangle() {
         let width = this.x2 - this.x1;
         let height = this.y2 - this.y1;
         ctx.beginPath();
-        ctx.rect(this.x1, this.y1, width, height);
+        ctx.save();
+        ctx.translate(this.x1,this.y1);
+        ctx.rotate(this.angle * (Math.PI / 180));
+        ctx.rect(0, 0, width, height);
+        ctx.globalAlpha = this.globalAlpha;
         //Setting Fill mode
         if (this.fillMode === 'fill') {
             ctx.fillStyle = this.fillColor;
@@ -120,27 +133,42 @@ function Rectangle() {
             ctx.lineWidth = this.lineWidth;
             ctx.stroke();
         }
+        ctx.restore();
     }
 }
 
 // Defining Ellipse
 function Ellipse() {
-    this.x1 = x1;
-    this.y1 = y1;
-    this.x2 = x2;
-    this.y2 = y2;
+    this.x1 = x1 < x2 ? x1 : x2;
+    this.y1 = y1 < y2 ? y1 : y2;
+    this.x2 = x1 > x2 ? x1 : x2;
+    this.y2 = y1 > y2 ? y1 : y2;
+    this.globalAlpha = 1;
+    this.angle = 0;
     this.fillMode = "stroke";
     this.fillColor = fillColor;
     this.strokeColor = "#000";
-    this.lineWidth = lineWidth;
+    this.lineWidth = 1;
     this.draw = () => {
-        let xRadius = Math.sqrt(Math.pow(this.x2 - this.x1, 2));
-        let yRadius =  Math.sqrt(Math.pow(this.y2 - this.y1, 2));
+        let xRadius = this.x2 - this.x1;
+        let yRadius =  this.y2 - this.y1;
         // Calculating Mid Point of a Line
-        let midx = (this.x1 + this.x2) / 2;
-        let midy = (this.y1 + this.y2) / 2;
+        let midx = (this.x2 - this.x1) / 2;
+        let midy = (this.y2 - this.y1) / 2;
         ctx.beginPath();
+        ctx.save();
+        ctx.translate(this.x1, this.y1);
+        ctx.rotate(this.angle * (Math.PI / 180))
+        // let scalex = ((this.x2-this.x1)/2);
+        // let scaley = ((this.y2-this.y1)/2);
+        // ctx.scale(scalex,scaley);
+        // //Create ellipse
+        // let midx = (this.x1/scalex)+1;
+        // let midy = (this.y1/scaley)+1;
+        // ctx.arc(midx, midy, 1, 0, 2*Math.PI);
         ctx.ellipse(midx, midy, xRadius, yRadius, 0, Math.PI * 2, false);
+        ctx.restore();
+        ctx.globalAlpha = this.globalAlpha;
         if (this.fillMode === 'fill') {
             ctx.fillStyle = this.fillColor;
             ctx.fill();
@@ -155,6 +183,7 @@ function Ellipse() {
             ctx.lineWidth = this.lineWidth;
             ctx.stroke();
         }
+        
     }
 }
 
@@ -176,6 +205,8 @@ function Text() {
     this.y1 = y1;
     this.x2 = x2;
     this.y2 = y2;
+    this.globalAlpha = 1;
+    this.angle = 0;
     this.showInput = () => {
         text.style.display = 'block';
         text.style.top = this.y2 + 'px';
