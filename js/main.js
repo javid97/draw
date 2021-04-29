@@ -19,7 +19,7 @@ let toolBackground = document.getElementById('background');
 let toolOpacity = document.getElementById('opacity');
 //setting height and width to the canvas
 canvas.width = (window.innerWidth / 100) * 78;
-canvas.height =  (window.innerHeight / 100) * 84;
+canvas.height = (window.innerHeight / 100) * 84;
 const ctx = canvas.getContext('2d');
 
 
@@ -61,10 +61,10 @@ let Ruler = () => {
             if (i % 50 == 0) {
                 scale(leftCtx, i, canvas, leftCanvas, 20);
                 leftCtx.save();
-                leftCtx.translate(2,i + 12);
-                leftCtx.rotate(-0.5*Math.PI);
+                leftCtx.translate(2, i + 12);
+                leftCtx.rotate(-0.5 * Math.PI);
                 leftCtx.font = "9px tahoma";
-                leftCtx.fillStyle ="#071a88";// "#b3b3b3";
+                leftCtx.fillStyle = "#071a88";// "#b3b3b3";
                 leftCtx.textBaseline = "top";
                 leftCtx.fillText(b.toString(), 0, 0);
                 leftCtx.restore();
@@ -117,7 +117,7 @@ let fillMode, fillColor, strokeColor, lineWidth;
 let undoArr = [];
 let pencilPoints = [];
 let eraserPoints = [];
-let resize = { index: -1, constName: "notKnown", pos: "o", check: false };
+let resize = { index: -1, constName: "notKnown", pos: "o" };
 let anchrSize = 3;
 
 //Setting fontsize and font Name
@@ -219,7 +219,8 @@ const drawingMode = () => {
 }
 
 //Setting color,stroke, linewidth
-let drag = false;
+let drag;
+let isResizable = false;
 const reDraw = () => {
     ctx.clearRect(0, 0, innerWidth, innerHeight);
     if (drawnObjects.length != 0) {
@@ -233,10 +234,16 @@ const startDraw = (e) => {
     drag = false;
     x1 = e.offsetX;
     y1 = e.offsetY;
-    resize = getCurrentPosition(x1, y1);
+    if(isResizable) {
+        resize = getCurrentPosition(x1, y1);
+        if(resize.index == -1){
+            isResizable = false;
+        }
+    }
+    //resize = getCurrentPosition(x1, y1);
 }
 const drawing = (e1) => {
-    if (mousedown && resize.index == -1) {
+    if (mousedown && !isResizable) {//&& resize.index == -1
         if (mode == MODES.PENCIL) {
             pencilPoints.push({ x: e1.offsetX, y: e1.offsetY });
         }
@@ -249,7 +256,7 @@ const drawing = (e1) => {
         drawingMode();
         drag = true;
     }
-    else if (mousedown && resize.index != -1) {
+    else if (mousedown && isResizable) {
         x2 = e1.offsetX;
         y2 = e1.offsetY;
         xOffset = x2 - x1;
@@ -297,18 +304,27 @@ const storeDrawings = (e) => {
     mousedown = false;
     x2 = e.offsetX;
     y2 = e.offsetY;
-    if(!resize.check){
+    if (!drag) {
+        resize = getCurrentPosition(x2, y2);
+        if (resize.index != -1) {
+            reDraw();
+            drawControlPoints(resize);
+            isResizable = true;
+        } else { 
+            isResizable = false;
+            reDraw();
+         }
+    } else {
         draw();
+        reDraw();
     }
-    reDraw();
     pencilPoints = [];
     eraserPoints = [];
-    console.log(drawnObjects);
     // if(resize.index = -1){
     //     resize.index = drawnObjects.length - 1;
     //     drawControlPoints(resize);  
     // }
-    drawControlPoints(resize);
+    //drawControlPoints(resize);
 }
 //Repositioning the shape
 let getCurrentPosition = (x, y) => {
@@ -324,31 +340,31 @@ let getCurrentPosition = (x, y) => {
         if (constName == "Rectangle") {
             if (boxX1 - anchrSize < x && x < boxX1 + anchrSize) {
                 if (boxY1 - anchrSize < y && y < boxY1 + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'tl' };
+                    return { index: i, constName: constName, pos: 'tl' };
                 } else if (boxY2 - anchrSize < y && y < boxY2 + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'bl' };
+                    return { index: i, constName: constName, pos: 'bl' };
                 } else if (midy - anchrSize < y && y < midy + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'l' };
+                    return { index: i, constName: constName, pos: 'l' };
                 }
             } else if (boxX2 - anchrSize < x && x < boxX2 + anchrSize) {
                 if (boxY1 - anchrSize < y && y < boxY1 + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'tr' };
+                    return { index: i, constName: constName, pos: 'tr' };
                 } else if (boxY2 - anchrSize < y && y < boxY2 + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'br' };
+                    return { index: i, constName: constName, pos: 'br' };
                 } else if (midy - anchrSize < y && y < midy + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'r' };
+                    return { index: i, constName: constName, pos: 'r' };
                 }
             } else if (midx - anchrSize < x && x < midx + anchrSize) {
                 if (boxY1 - anchrSize < y && y < boxY1 + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 't' };
+                    return { index: i, constName: constName, pos: 't' };
                 } else if (boxY2 - anchrSize < y && y < boxY2 + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'b' };
+                    return { index: i, constName: constName, pos: 'b' };
                 } else if (boxY1 - anchrSize < y && y < boxY2 + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'i' };
+                    return { index: i, constName: constName, pos: 'i' };
                 }
             } else if (boxX1 - anchrSize < x && x < boxX2 + anchrSize) {
                 if (boxY1 - anchrSize < y && y < boxY2 + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'i' };
+                    return { index: i, constName: constName, pos: 'i' };
                 }
             }
         }
@@ -357,31 +373,31 @@ let getCurrentPosition = (x, y) => {
             let gx = x - boxX1;
             if (y <= slope * gx + boxY1 + anchrSize && y >= slope * gx + boxY1 - anchrSize) {
                 if (x >= boxX1 - anchrSize && x <= boxX2 + anchrSize && y <= boxY2 + anchrSize && y >= boxY1 - anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'i' };
+                    return { index: i, constName: constName, pos: 'i' };
                 }
             } else if (boxX1 - anchrSize < x && x < boxX1 + anchrSize) {
                 if (boxY1 - anchrSize < y && y < boxY1 + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'tl' };
+                    return { index: i, constName: constName, pos: 'tl' };
                 } else if (boxY2 - anchrSize < y && y < boxY2 + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'bl' };
+                    return { index: i, constName: constName, pos: 'bl' };
                 } else if (midy - anchrSize < y && y < midy + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'l' };
+                    return { index: i, constName: constName, pos: 'l' };
                 }
             } else if (boxX2 - anchrSize < x && x < boxX2 + anchrSize) {
                 if (boxY1 - anchrSize < y && y < boxY1 + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'tr' };
+                    return { index: i, constName: constName, pos: 'tr' };
                 } else if (boxY2 - anchrSize < y && y < boxY2 + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'br' };
+                    return { index: i, constName: constName, pos: 'br' };
                 } else if (midy - anchrSize < y && y < midy + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'r' };
+                    return { index: i, constName: constName, pos: 'r' };
                 }
             } else if (midx - anchrSize < x && x < midx + anchrSize) {
                 if (boxY1 - anchrSize < y && y < boxY1 + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 't' };
+                    return { index: i, constName: constName, pos: 't' };
                 } else if (boxY2 - anchrSize < y && y < boxY2 + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'b' };
+                    return { index: i, constName: constName, pos: 'b' };
                 } else if (boxY1 - anchrSize < y && y < boxY2 + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'i' };
+                    return { index: i, constName: constName, pos: 'i' };
                 }
             }
         }
@@ -396,30 +412,30 @@ let getCurrentPosition = (x, y) => {
             let k = (y1 + y2) / 2;
             let p = (Math.pow((x - h), 2)) / Math.pow(xRadius, 2) + (Math.pow((y - k), 2)) / Math.pow(yRadius, 2);
             if (p <= 1) {
-                return { index: i, constName: constName, check:true, pos: 'i' };
+                return { index: i, constName: constName, pos: 'i' };
             } else if (x1 - anchrSize < x && x < x1 + anchrSize) {
                 if (y1 - anchrSize < y && y < y1 + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'tl' };
+                    return { index: i, constName: constName, pos: 'tl' };
                 } else if (y2 - anchrSize < y && y < y2 + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'bl' };
+                    return { index: i, constName: constName, pos: 'bl' };
                 } else if (midy - anchrSize < y && y < midy + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'l' };
+                    return { index: i, constName: constName, pos: 'l' };
                 }
             } else if (x2 - anchrSize < x && x < x2 + anchrSize) {
                 if (y1 - anchrSize < y && y < y1 + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'tr' };
+                    return { index: i, constName: constName, pos: 'tr' };
                 } else if (y2 - anchrSize < y && y < y2 + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'br' };
+                    return { index: i, constName: constName, pos: 'br' };
                 } else if (midy - anchrSize < y && y < midy + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'r' };
+                    return { index: i, constName: constName, pos: 'r' };
                 }
             } else if (midx - anchrSize < x && x < midx + anchrSize) {
                 if (y1 - anchrSize < y && y < y1 + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 't' };
+                    return { index: i, constName: constName, pos: 't' };
                 } else if (y2 - anchrSize < y && y < y2 + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'b' };
+                    return { index: i, constName: constName, pos: 'b' };
                 } else if (y1 - anchrSize < y && y < y2 + anchrSize) {
-                    return { index: i, constName: constName, check:true, pos: 'i' };
+                    return { index: i, constName: constName, pos: 'i' };
                 }
             }
         }
@@ -452,11 +468,11 @@ let getCurrentPosition = (x, y) => {
             midx = (x1 + x2) / 2;
             midy = (y1 + y2) / 2;
             if (x > x1 && x < x2 && y > y1 && y < y2) {
-                return { index: i, constName: constName, check:true, pos: 'o' };
+                return { index: i, constName: constName, pos: 'o' };
             }
         }
     }
-    return { index: -1, constName: "origin", check:false};
+    return { index: -1, constName: "origin" };
 }
 
 // Control Points
@@ -511,7 +527,7 @@ let drawControlPoints = (resize) => {
 const controlPoints = (x1, y1, width, height, angle) => {
     let anchrSize = 3;
     ctx.save();
-    ctx.setLineDash([4,3]);
+    ctx.setLineDash([4, 3]);
     ctx.strokeStyle = "Blue";
     ctx.lineWidth = 2;
     ctx.translate(x1, y1);
@@ -572,75 +588,75 @@ text.addEventListener('keypress', (e) => {
 // Mouse Events
 canvas.addEventListener("mousedown", startDraw);
 canvas.addEventListener("mousemove", drawing);
-canvas.addEventListener("mouseup",storeDrawings);
-canvasHeight.addEventListener('change', () => {
-    if(isNaN(canvasHeight.value)){
-        canvasHeight.value = 'NaN';
-    }else{
-        canvas.height = canvasHeight.value;
-    }
-});
-canvasWidth.addEventListener('change', () => {
-    if(isNaN(canvasWidth.value)){
-        canvasWidth.value = 'NaN';
-    }else{
-        canvas.width = canvasWidth.value;
-    }
-});
-canvasOpacity.addEventListener('change', () => {
-    let check = canvasOpacity.value;
-    if(isNaN(check)){
-        canvasOpacity.value = 'NaN';
-    }else{
-        if(check > 1){
-            canvas.style.opacity = 1;
-            canvasOpacity.value = 1;
-        } else if(check < 0) {
-            canvas.style.opacity = 0;
-            canvasOpacity.value = 0;
-        }
-        else{
-            canvas.style.opacity = check;
-        }
-    }
-});
-canvasBackground.addEventListener('change', () => {
-    canvas.style.background = canvasBackground.value;
-});
-toolHeight.addEventListener('change', () => {
-    if(isNaN(canvasHeight.value)){
-        toolHeight.value = 'NaN';
-    }else{
-        canvas.height = canvasHeight.value;
-    }
-});
-toolWidth.addEventListener('change', () => {
-    if(isNaN(toolWidth.value)){
-        toolWidth.value = 'NaN';
-    }else{
-        tool.width = toolWidth.value;
-    }
-});
-toolOpacity.addEventListener('change', () => {
-    let check = toolOpacity.value;
-    if(isNaN(op)){
-        toolOpacity.value = 'NaN';
-    }else{
-        if(check > 1){
-            tool.style.opacity = 1;
-            toolOpacity.value = 1;
-        } else if(check < 0) {
-            tool.style.opacity = 0;
-            toolOpacity.value = 0;
-        }
-        else{
-            tool.style.opacity = check;
-        }
-    }
-});
-toolBackground.addEventListener('change', () => {
-    tool.style.background = canvasBackground.value;
-});
+canvas.addEventListener("mouseup", storeDrawings);
+// canvasHeight.addEventListener('change', () => {
+//     if (isNaN(canvasHeight.value)) {
+//         canvasHeight.value = 'NaN';
+//     } else {
+//         canvas.height = canvasHeight.value;
+//     }
+// });
+// canvasWidth.addEventListener('change', () => {
+//     if (isNaN(canvasWidth.value)) {
+//         canvasWidth.value = 'NaN';
+//     } else {
+//         canvas.width = canvasWidth.value;
+//     }
+// });
+// canvasOpacity.addEventListener('change', () => {
+//     let check = canvasOpacity.value;
+//     if (isNaN(check)) {
+//         canvasOpacity.value = 'NaN';
+//     } else {
+//         if (check > 1) {
+//             canvas.style.opacity = 1;
+//             canvasOpacity.value = 1;
+//         } else if (check < 0) {
+//             canvas.style.opacity = 0;
+//             canvasOpacity.value = 0;
+//         }
+//         else {
+//             canvas.style.opacity = check;
+//         }
+//     }
+// });
+// canvasBackground.addEventListener('change', () => {
+//     canvas.style.background = canvasBackground.value;
+// });
+// toolHeight.addEventListener('change', () => {
+//     if (isNaN(canvasHeight.value)) {
+//         toolHeight.value = 'NaN';
+//     } else {
+//         canvas.height = canvasHeight.value;
+//     }
+// });
+// toolWidth.addEventListener('change', () => {
+//     if (isNaN(toolWidth.value)) {
+//         toolWidth.value = 'NaN';
+//     } else {
+//         tool.width = toolWidth.value;
+//     }
+// });
+// toolOpacity.addEventListener('change', () => {
+//     let check = toolOpacity.value;
+//     if (isNaN(op)) {
+//         toolOpacity.value = 'NaN';
+//     } else {
+//         if (check > 1) {
+//             tool.style.opacity = 1;
+//             toolOpacity.value = 1;
+//         } else if (check < 0) {
+//             tool.style.opacity = 0;
+//             toolOpacity.value = 0;
+//         }
+//         else {
+//             tool.style.opacity = check;
+//         }
+//     }
+// });
+// toolBackground.addEventListener('change', () => {
+//     tool.style.background = canvasBackground.value;
+// });
 // canvas.addEventListener('click',(e) => {
 //     resize = getCurrentPosition(e.offsetX, e.offsetY);
 // });
