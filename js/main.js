@@ -299,6 +299,9 @@ const drawing = (e1) => {
         reDraw();
         drawControlPoints(resize);
     }
+    if(isResizable){
+        pointerIndication(resize.index, e1.offsetX, e1. offsetY);
+    }
 }
 const storeDrawings = (e) => {
     mousedown = false;
@@ -328,6 +331,47 @@ const storeDrawings = (e) => {
     //     drawControlPoints(resize);  
     // }
     //drawControlPoints(resize);
+}
+
+// Providing the Pointer Directions
+
+const pointerIndication = (index, x, y) => {
+    let anchorSize = 3;
+    let box = drawnObjects[index];
+    let x1 = box.x1;
+    let y1 = box.y1;
+    let x2 = box.x2;
+    let y2 = box.y2;
+        let angle = box.angle * (Math.PI / 180);
+        if (resize.constName == "Ellipse") {
+            let xRad = Math.sqrt(Math.pow(x2 - x1, 2)) / 2;
+            let yRad = Math.sqrt(Math.pow(y2 - y1, 2)) / 2;
+            x1 = x1 - xRad;
+            y1 = y1 - yRad;
+            x2 = x2 + xRad;
+            y2 = y2 + yRad;
+        }
+    let width = x2 - x1;
+    let height = y2 - y1;
+    console.log(width/2);
+    if(x > x1 && y > y1 && x <  x2 && y < y2){
+        canvas.style.cursor = "move";
+    }
+    else if((x > x1 - anchorSize && y > y1 - anchorSize && x < x1 + anchorSize && y < y1 + anchorSize) || 
+    (x > x2 - anchorSize && y > y2 - anchorSize && x < x2 + anchorSize && y < y2 + anchorSize)){
+        canvas.style.cursor = 'nw-resize';
+    }else if((x > x1 + (width / 2) - anchorSize && x < x1 + (width / 2 ) + anchorSize && y > y1 - anchorSize && y < y1 + anchorSize) || 
+    (x > x1 + (width / 2) - anchorSize && x < x1 + (width / 2 ) + anchorSize && y > y1 + height - anchorSize && y < y1 + height + anchorSize)){
+        canvas.style.cursor = 'ns-resize';
+    }else if((x > x1 - anchorSize && x < x1 + anchorSize && y > y1 + height / 2 - anchorSize && y < y1 + height / 2 + anchorSize) ||
+    (x > x1 + width - anchorSize && x < x1 + width + anchorSize && y > y1 + height / 2 - anchorSize && y < y1 + height / 2 + anchorSize)){
+        canvas.style.cursor = 'ew-resize';
+    }else if((x > x1 - anchorSize && x < x1 + anchorSize && y > y1 + height - anchorSize && y < y1 + height + anchorSize) ||
+    (x > x1 + width - anchorSize && x < x1 + width + anchorSize && y > y1 - anchorSize && y < y1 + anchorSize) ) {
+        canvas.style.cursor = 'ne-resize';
+    }else {
+        canvas.style.cursor = 'auto';
+    }
 }
 //Repositioning the shape
 let getCurrentPosition = (x, y) => {
