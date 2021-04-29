@@ -317,6 +317,9 @@ const storeDrawings = (e) => {
     } else {
         draw();
         reDraw();
+        resize.index = drawnObjects.length - 1;
+        drawControlPoints(resize);
+        isResizable = true;
     }
     pencilPoints = [];
     eraserPoints = [];
