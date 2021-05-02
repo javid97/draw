@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
-$primary:  #37474f;
-$secondary:#92967d;//#03506f;
-$surface:#a6f0c6;//#cfcfcf;
+$primary:  #dddddd;
+$secondary:#8d93ab;//#03506f;
+$surface:#393b44;//#cfcfcf;
 $error: #B00020;
 
 * {
@@ -156,9 +156,9 @@ body {
         flex-direction: column;
         gap: .5rem;
         .button {
-            height: 3.5rem;
-            width: 3.5rem;
-            font-size: 2rem;
+            height: 3rem;
+            width: 3rem;
+            font-size: 1.8rem;
             font-weight: bolder;
             position: relative;
             background: $primary;
@@ -188,11 +188,12 @@ body {
             }
         }
         .activeBtn{
-            background: #31326f;
-            color: #ffc93c;
-        }
-        .polygon:focus + .polygonOptions{
-            display: grid;
+            background: $surface;
+            color: $primary;
+            border: none;
+            outline: none;
+            border: .1rem solid $surface;
+            box-shadow: inset 3px 3px 8px lighten($surface, 50%), inset -3px -3px 8px darken($primary, 100%);
         }
         .polygonOptions{
             position: absolute;
@@ -286,6 +287,7 @@ body {
             top: 5px;
             background: $primary;
             z-index: 1;
+            display: none;
             }
             #topCanvas{
                 position: absolute;
@@ -293,6 +295,7 @@ body {
                 left: 20px;
                 background: $primary;
                 z-index: 1;
+                display: none;
             }
             #cornerCanvas {
                 position: fixed;
@@ -323,8 +326,9 @@ body {
                   }
                 #canvas{ 
                     transition: .5s all ease-in-out;
-                    margin: 2rem;  
+                    // margin: 2rem;  
                     background: #fff;
+                    cursor: crosshair;
                     z-index: 0;
                 }
             }

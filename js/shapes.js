@@ -191,6 +191,113 @@ function Ellipse() {
     }
 }
 
+// Defining Polygon
+function Polygon() {
+    this.x1 = x1 < x2 ? x1 : x2;
+    this.y1 = y1 < y2 ? y1 : y2;
+    this.x2 = x1 > x2 ? x1 : x2;
+    this.y2 = y1 > y2 ? y1 : y2;
+    this.spikes = spike;
+    this.globalAlpha = 1;
+    this.angle = 0;
+    this.fillMode = "stroke";
+    this.fillColor = fillColor;
+    this.strokeColor = "#000";
+    this.lineWidth = 1;
+    this.draw = () => {
+        let polyAng = 0;
+        let step = (Math.PI * 2) / this.spikes;
+        ctx.beginPath();
+        ctx.save();
+        ctx.translate(this.x1, this.y1);
+        ctx.rotate(this.angle * (Math.PI / 180));
+        let xdistance = Math.pow(this.x2 - this.x1, 2);
+        let ydistance = Math.pow(this.y2 - this.y1, 2);
+        let distance = Math.sqrt(xdistance + ydistance);
+        let rad = distance / 2;
+        let xOrigin = (this.x2 - this.x1) / 2;
+        let yOrigin = (this.y2 - this.y1) / 2;
+        ctx.moveTo(xOrigin + rad * Math.sin(0), yOrigin + rad * Math.cos(0));
+        let i = 0;
+        for(i; i < this.spikes; i++){
+            polyAng += step
+            ctx.lineTo(xOrigin + rad * Math.sin(polyAng), yOrigin + rad * Math.cos(polyAng));
+        }
+        ctx.restore();
+        ctx.globalAlpha = this.globalAlpha;
+        if (this.fillMode === 'fill') {
+            ctx.fillStyle = this.fillColor;
+            ctx.fill();
+        } else if (this.fillMode === 'stroke-fill') {
+            ctx.strokeStyle = this.strokeColor;
+            ctx.fillStyle = this.fillColor;
+            ctx.lineWidth = this.lineWidth;
+            ctx.stroke();
+            ctx.fill();
+        } else {
+            ctx.strokeStyle = this.strokeColor;
+            ctx.lineWidth = this.lineWidth;
+            ctx.stroke();
+        }
+        
+    }
+}
+
+//Defining Star
+function Star() {
+    this.x1 = x1 < x2 ? x1 : x2;
+    this.y1 = y1 < y2 ? y1 : y2;
+    this.x2 = x1 > x2 ? x1 : x2;
+    this.y2 = y1 > y2 ? y1 : y2;
+    this.spikes = spike;
+    this.globalAlpha = 1;
+    this.angle = 0;
+    this.fillMode = "stroke";
+    this.fillColor = fillColor;
+    this.strokeColor = "#000";
+    this.lineWidth = 1;
+    this.draw = () => {
+        let polyAng = 0;
+        let step = (Math.PI) / this.spikes;
+        ctx.beginPath();
+        ctx.save();
+        ctx.translate(this.x1, this.y1);
+        ctx.rotate(this.angle * (Math.PI / 180));
+        let xdistance = Math.pow(this.x2 - this.x1, 2);
+        let ydistance = Math.pow(this.y2 - this.y1, 2);
+        let distance = Math.sqrt(xdistance + ydistance);
+        let outerRad = distance / 2;
+        let innerRad = 2 * (outerRad / 3);
+        let xOrigin = (this.x2 - this.x1) / 2;
+        let yOrigin = (this.y2 - this.y1) / 2;
+        ctx.moveTo(xOrigin + outerRad * Math.sin(0), yOrigin + outerRad * Math.cos(0));
+        let i = 0;
+        for(i; i < this.spikes; i++){
+            polyAng += step;
+            ctx.lineTo(xOrigin + innerRad * Math.sin(polyAng), yOrigin + innerRad * Math.cos(polyAng));
+            polyAng += step;
+            ctx.lineTo(xOrigin + outerRad * Math.sin(polyAng), yOrigin + outerRad * Math.cos(polyAng));
+        }
+        ctx.restore();
+        ctx.globalAlpha = this.globalAlpha;
+        if (this.fillMode === 'fill') {
+            ctx.fillStyle = this.fillColor;
+            ctx.fill();
+        } else if (this.fillMode === 'stroke-fill') {
+            ctx.strokeStyle = this.strokeColor;
+            ctx.fillStyle = this.fillColor;
+            ctx.lineWidth = this.lineWidth;
+            ctx.stroke();
+            ctx.fill();
+        } else {
+            ctx.strokeStyle = this.strokeColor;
+            ctx.lineWidth = this.lineWidth;
+            ctx.stroke();
+        }
+        
+    }
+}
+
 function Eraser() {
     this.x1 = x1;
     this.y1 = y1;

@@ -105,7 +105,9 @@ let MODES = {
     PENCIL: 5,
     TEXT: 6,
     ERASER: 7,
-    RESIZE: 8
+    RESIZE: 8,
+    POLYGON: 9,
+    STAR: 10
 }
 let mode = MODES.NONE;
 let x1, y1, x2, y2;
@@ -129,6 +131,28 @@ const setTextFontSize = (val) => {
 const setTextFontFamily = (val) => {
     text.style.fontFamily = `${val}`;
 }
+//setting the Events to all the polygon buttons
+let spike;
+let PolygonButton = document.querySelector('.polygon');
+let polygonOptions = document.querySelector('.polygonOptions');
+PolygonButton.addEventListener('click', () => {
+    polygonOptions.style.display = 'block';
+})
+let polygonOpt = document.querySelectorAll('.polygonOpt');
+polygonOpt.forEach(opt => {
+    opt.addEventListener('click', e => {
+        let classlist = opt.classList;
+        if(classlist.contains("hexagon")){
+            PolygonButton.textContent = opt.innerHTML;
+            spike = 6;
+        }
+        if(classlist.contains("star5")){
+            PolygonButton.innerHTML = opt.textContent;
+            spike = 5;
+        }
+        polygonOptions.style.display = 'none';
+    });
+});
 
 //Setting the Events to all the buttons
 let buttons = document.querySelectorAll(".dButton");
@@ -149,6 +173,10 @@ buttons.forEach(button => {
             mode = MODES.TEXT;
         } else if (classlist.contains("eraser")) {
             mode = MODES.ERASER;
+        } else if (classlist.contains("dPolygon")) {
+            mode = MODES.POLYGON;
+        } else if (classlist.contains("star")) {
+            mode = MODES.STAR;
         }
         setBtnStyle();
     });
@@ -176,6 +204,12 @@ const draw = () => {
             break;
         case MODES.ERASER:
             drawnObjects.push(new Eraser());
+            break;
+        case MODES.POLYGON:
+            drawnObjects.push(new Polygon());
+            break;
+        case MODES.STAR:
+            drawnObjects.push(new Star());
             break;
         default:
             break;
@@ -213,6 +247,14 @@ const drawingMode = () => {
             d = new Eraser();
             d.draw();
             break;
+        case MODES.POLYGON:
+            d = new Polygon();
+            d.draw();
+            break;
+        case MODES.STAR:
+            d = new Star();
+            d.draw();
+            break;
         default:
             break;
     }
@@ -234,9 +276,9 @@ const startDraw = (e) => {
     drag = false;
     x1 = e.offsetX;
     y1 = e.offsetY;
-    if(isResizable) {
+    if (isResizable) {
         resize = getCurrentPosition(x1, y1);
-        if(resize.index == -1){
+        if (resize.index == -1) {
             isResizable = false;
         }
     }
@@ -299,8 +341,8 @@ const drawing = (e1) => {
         reDraw();
         drawControlPoints(resize);
     }
-    if(isResizable){
-        pointerIndication(resize.index, e1.offsetX, e1. offsetY);
+    if (isResizable) {
+        pointerIndication(resize.index, e1.offsetX, e1.offsetY);
     }
 }
 const storeDrawings = (e) => {
@@ -313,10 +355,10 @@ const storeDrawings = (e) => {
             reDraw();
             drawControlPoints(resize);
             isResizable = true;
-        } else { 
+        } else {
             isResizable = false;
             reDraw();
-         }
+        }
     } else {
         draw();
         reDraw();
@@ -326,15 +368,9 @@ const storeDrawings = (e) => {
     }
     pencilPoints = [];
     eraserPoints = [];
-    // if(resize.index = -1){
-    //     resize.index = drawnObjects.length - 1;
-    //     drawControlPoints(resize);  
-    // }
-    //drawControlPoints(resize);
 }
 
-// Providing the Pointer Directions
-
+// Providing the Pointer Indications
 const pointerIndication = (index, x, y) => {
     let anchorSize = 3;
     let box = drawnObjects[index];
@@ -342,35 +378,33 @@ const pointerIndication = (index, x, y) => {
     let y1 = box.y1;
     let x2 = box.x2;
     let y2 = box.y2;
-        let angle = box.angle * (Math.PI / 180);
-        if (resize.constName == "Ellipse") {
-            let xRad = Math.sqrt(Math.pow(x2 - x1, 2)) / 2;
-            let yRad = Math.sqrt(Math.pow(y2 - y1, 2)) / 2;
-            x1 = x1 - xRad;
-            y1 = y1 - yRad;
-            x2 = x2 + xRad;
-            y2 = y2 + yRad;
-        }
+    let angle = box.angle * (Math.PI / 180);
+    if (resize.constName == "Ellipse") {
+        let xRad = Math.sqrt(Math.pow(x2 - x1, 2)) / 2;
+        let yRad = Math.sqrt(Math.pow(y2 - y1, 2)) / 2;
+        x1 = x1 - xRad;
+        y1 = y1 - yRad;
+        x2 = x2 + xRad;
+        y2 = y2 + yRad;
+    }
     let width = x2 - x1;
     let height = y2 - y1;
-    console.log(width/2);
-    if(x > x1 && y > y1 && x <  x2 && y < y2){
+    if (x > x1 && y > y1 && x < x2 && y < y2) {
         canvas.style.cursor = "move";
-    }
-    else if((x > x1 - anchorSize && y > y1 - anchorSize && x < x1 + anchorSize && y < y1 + anchorSize) || 
-    (x > x2 - anchorSize && y > y2 - anchorSize && x < x2 + anchorSize && y < y2 + anchorSize)){
+    } else if ((x > x1 - anchorSize && y > y1 - anchorSize && x < x1 + anchorSize && y < y1 + anchorSize) ||
+        (x > x2 - anchorSize && y > y2 - anchorSize && x < x2 + anchorSize && y < y2 + anchorSize)) {
         canvas.style.cursor = 'nw-resize';
-    }else if((x > x1 + (width / 2) - anchorSize && x < x1 + (width / 2 ) + anchorSize && y > y1 - anchorSize && y < y1 + anchorSize) || 
-    (x > x1 + (width / 2) - anchorSize && x < x1 + (width / 2 ) + anchorSize && y > y1 + height - anchorSize && y < y1 + height + anchorSize)){
+    } else if ((x > x1 + (width / 2) - anchorSize && x < x1 + (width / 2) + anchorSize && y > y1 - anchorSize && y < y1 + anchorSize) ||
+        (x > x1 + (width / 2) - anchorSize && x < x1 + (width / 2) + anchorSize && y > y1 + height - anchorSize && y < y1 + height + anchorSize)) {
         canvas.style.cursor = 'ns-resize';
-    }else if((x > x1 - anchorSize && x < x1 + anchorSize && y > y1 + height / 2 - anchorSize && y < y1 + height / 2 + anchorSize) ||
-    (x > x1 + width - anchorSize && x < x1 + width + anchorSize && y > y1 + height / 2 - anchorSize && y < y1 + height / 2 + anchorSize)){
+    } else if ((x > x1 - anchorSize && x < x1 + anchorSize && y > y1 + height / 2 - anchorSize && y < y1 + height / 2 + anchorSize) ||
+        (x > x1 + width - anchorSize && x < x1 + width + anchorSize && y > y1 + height / 2 - anchorSize && y < y1 + height / 2 + anchorSize)) {
         canvas.style.cursor = 'ew-resize';
-    }else if((x > x1 - anchorSize && x < x1 + anchorSize && y > y1 + height - anchorSize && y < y1 + height + anchorSize) ||
-    (x > x1 + width - anchorSize && x < x1 + width + anchorSize && y > y1 - anchorSize && y < y1 + anchorSize) ) {
+    } else if ((x > x1 - anchorSize && x < x1 + anchorSize && y > y1 + height - anchorSize && y < y1 + height + anchorSize) ||
+        (x > x1 + width - anchorSize && x < x1 + width + anchorSize && y > y1 - anchorSize && y < y1 + anchorSize)) {
         canvas.style.cursor = 'ne-resize';
-    }else {
-        canvas.style.cursor = 'auto';
+    } else {
+        canvas.style.cursor = 'crosshair';
     }
 }
 //Repositioning the shape
@@ -543,23 +577,23 @@ let drawControlPoints = (resize) => {
             for (let j = 0; j < drawnObjects[resize.index].pencilPoints.length; j++) {
                 if (j % 2 == 0) {
                     if (j == 0) {
-                        boxX1 = drawnObjects[resize.index].pencilPoints[0].x;
-                        boxX2 = drawnObjects[resize.index].pencilPoints[drawnObjects[resize.index].pencilPoints.length - 1].x;
+                        boxX1 = box.pencilPoints[0].x;
+                        boxX2 = box.pencilPoints[box.pencilPoints.length - 1].x;
                     } else {
-                        if (boxX1 < drawnObjects[resize.index].pencilPoints[j].x) { boxX1 = boxX1; }
-                        else { boxX1 = drawnObjects[resize.index].pencilPoints[j].x; }
-                        if (boxX2 < drawnObjects[resize.index].pencilPoints[j].x) { boxX2 = drawnObjects[resize.index].pencilPoints[j].x; }
+                        if (boxX1 < box.pencilPoints[j].x) { boxX1 = boxX1; }
+                        else { boxX1 = box.pencilPoints[j].x; }
+                        if (boxX2 < box.pencilPoints[j].x) { boxX2 = box.pencilPoints[j].x; }
                         else { boxX2 = boxX2; }
                     }
                 }
                 else {
                     if (j == 1) {
-                        boxY1 = drawnObjects[resize.index].pencilPoints[0].y;
-                        boxY2 = drawnObjects[resize.index].pencilPoints[drawnObjects[resize.index].pencilPoints.length - 1].y;
+                        boxY1 = box.pencilPoints[0].y;
+                        boxY2 = box.pencilPoints[box.pencilPoints.length - 1].y;
                     } else {
-                        if (boxY1 < drawnObjects[resize.index].pencilPoints[j].y) { boxY1 = boxY1; }
-                        else { boxY1 = drawnObjects[resize.index].pencilPoints[j].y; }
-                        if (boxY2 < drawnObjects[resize.index].pencilPoints[j].y) { boxY2 = drawnObjects[resize.index].pencilPoints[j].y; }
+                        if (boxY1 < box.pencilPoints[j].y) { boxY1 = boxY1; }
+                        else { boxY1 = box.pencilPoints[j].y; }
+                        if (boxY2 < box.pencilPoints[j].y) { boxY2 = box.pencilPoints[j].y; }
                         else { boxY2 = boxY2; }
                     }
                 }
