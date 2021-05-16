@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
 $primary:  #dddddd;
 $secondary:#8d93ab;//#03506f;
-$surface:#393b44;//#cfcfcf;
+$surface: #126e82;//#393b44;//#cfcfcf;
 $error: #B00020;
 
 * {
@@ -23,27 +23,95 @@ body {
     height: 100%;
     width: 100%;
     .menus {
-        width: 80%;
-        height: 5rem;
-        margin-left: 2rem;
+        width: 100%;
+        height: 4rem;
         display: flex;
-        justify-content: flex-start;
+        justify-content: center;
         align-items: center;
-
-        ul{
-            display: flex;
-            flex-direction: row;
-            gap: 1rem;
+        box-shadow: inset -.1rem -.1rem 1rem darken($primary, 20%);
+        .menu{
+            width: 80%;
+            height: 3rem;
+            padding-top: .5rem;
             li{
+                position: relative;
                 list-style: none;
-                color: $surface;
-                font-size: 1.6rem;
-                display: grid;
-                place-items: center;
-                border-radius: .5rem;
+                display: inline-block;
+                text-align: center;
+                line-height: 3rem;
                 height: 3rem;
                 width: 8rem;
-                box-shadow: inset -.2rem -.2rem .4rem darken($primary,50%), inset .2rem .2rem .4rem lighten($primary,50%);
+                color: $surface;
+                border-radius: .3rem;
+                font-size: 1.6rem;
+                &:hover > .sub-menus {
+                    display: flex;
+                }
+                // &:hover{
+                //     background: blue;
+                //     color: $primary;
+                // }
+                .sub-menus{
+                    position: absolute;
+                    display: none;
+                    flex-direction: column;
+                    width: 25rem;
+                    height: auto;
+                    background: $surface;
+                    z-index: 100;
+                    border: .2rem solid $secondary;
+                    &::before{
+                        position: absolute;
+                        content: '';
+                        top: -1rem;
+                        left: 0;
+                        border-bottom: 1rem solid $surface;
+                        border-left: 1rem solid transparent;
+                        border-right: 1rem solid transparent;
+                    }
+                    li{
+                        flex: 1;
+                        display: flex;
+                        font-size: 1.3rem;
+                        height: 4rem;
+                        width: 100%;
+                        text-align: left;
+                        cursor: pointer;
+                        color: lighten($primary, 20%);
+                        border-bottom: .1rem solid darken($primary, 10%);
+                        // &:hover{
+                        //     background: $primary;
+                        //     color: $surface;
+                        // }
+                        label{
+                            flex: 2;
+                            height: 100%;
+                            display: block;
+                            cursor: pointer;
+                            line-height: 4rem;
+                        }
+                        .fas{
+                            flex: 1;
+                            line-height: 4rem;
+                            text-align: center;
+                            font-size: 2rem;
+                        }
+                        input{
+                            text-align: center;
+                            flex: 1;
+                            margin-top: 1rem;
+                            height: 2rem;
+                            width: 2rem;
+                            border: none;
+                            cursor: pointer;
+                            outline: none;
+                            &:focus{
+                                outline: none;
+                                border: none;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -145,6 +213,7 @@ body {
     display: flex;
     position: relative;
     flex-direction: row;
+    margin-top: 1rem;
     width: 100%;
     gap: .5rem;
     //margin: 0 auto;
@@ -166,7 +235,7 @@ body {
             border-radius: 50%;
             border: none;
             outline: none;
-            box-shadow: inset 3px 3px 8px lighten($primary, 50%), inset -3px -3px 8px darken($primary, 100%);  
+            box-shadow: inset 3px 3px 8px lighten($primary, 50%), inset -3px -3px 6px darken($primary, 50%);  
             &::after {
                 content: attr(data-title);
                 position: absolute;
@@ -188,12 +257,11 @@ body {
             }
         }
         .activeBtn{
-            background: $surface;
+            background: #04009a;
             color: $primary;
             border: none;
             outline: none;
-            border: .1rem solid $surface;
-            box-shadow: inset 3px 3px 8px lighten($surface, 50%), inset -3px -3px 8px darken($primary, 100%);
+            box-shadow: inset 3px 3px 8px lighten(#04009a, 50%), inset -3px -3px 8px darken(#04009a, 100%);
         }
         .polygonOptions{
             position: absolute;
@@ -279,28 +347,23 @@ body {
         overflow: hidden;
         border-radius: 10px;
         background: $primary;
-        border: 2px solid darken($primary, 10%);
+        border: .1rem solid darken($primary, 10%);
         //box-shadow: -8px -8px 8px #f8f8f8, 5px 5px 10px #888;
           #leftCanvas{
             position: absolute;
             left: 0;
-            top: 5px;
             background: $primary;
             z-index: 1;
-            display: none;
+            //display: none;
             }
             #topCanvas{
                 position: absolute;
                 top: 0;
-                left: 20px;
                 background: $primary;
                 z-index: 1;
-                display: none;
+                //display: none;
             }
             #cornerCanvas {
-                position: fixed;
-                top: 50px;
-                left:204px;
                 display: none;
                 background: $secondary;
                 z-index: 100;
@@ -308,8 +371,8 @@ body {
             .editorContainer {
                 position: relative;
                 overflow: scroll;
-                display: grid;
-                place-items: center;
+                // display: grid;
+                // place-items: center;
                 height: 100%;
                 width: 100%;
                 scrollbar-color: $secondary;
@@ -325,8 +388,7 @@ body {
                     border-radius: 20px;
                   }
                 #canvas{ 
-                    transition: .5s all ease-in-out;
-                    // margin: 2rem;  
+                    transition: .5s all ease-in-out; 
                     background: #fff;
                     cursor: crosshair;
                     z-index: 0;

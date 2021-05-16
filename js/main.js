@@ -19,7 +19,7 @@ let toolBackground = document.getElementById('background');
 let toolOpacity = document.getElementById('opacity');
 //setting height and width to the canvas
 canvas.width = (window.innerWidth / 100) * 78;
-canvas.height = (window.innerHeight / 100) * 84;
+canvas.height = (window.innerHeight / 100) * 87;
 const ctx = canvas.getContext('2d');
 
 
@@ -33,50 +33,72 @@ canvasWidth.value = canvas.width;
 
 
 //topCanvas
-cornerCanvas.height = 20;
-cornerCanvas.width = 20;
+cornerCanvas.height = 15;
+cornerCanvas.width = 15;
 topCanvas.width = canvas.width + 20;//(window.innerWidth / 100) * 78;
-topCanvas.height = 20;
-leftCanvas.width = 20;
+topCanvas.height = 15;
+leftCanvas.width = 15;
 leftCanvas.height = canvas.height + 15;//(window.innerHeight / 100) * 86;
-
+const grid = () => {
+    let a = 10;
+    let b = 10;
+    ctx.beginPath();
+    //ctx.setLineDash([1, 1]);
+    for (let i = 0; i < canvas.height; i++) {
+        ctx.moveTo(0, a);
+        ctx.lineTo(canvas.width, a);
+        a += 10;
+    }
+    for (let i = 0; i < canvas.width; i++) {
+        ctx.moveTo(b, 0);
+        ctx.lineTo(b, canvas.height);
+        b += 10;
+    }
+    ctx.globalCompositeOperation = 'destination-over';
+    //ctx.globalAlpha = 0.7;
+    ctx.lineWidth = 0.5;
+    ctx.strokeStyle = 'green';
+    ctx.stroke();
+    ctx.closePath();
+}
 let Ruler = () => {
     let a = 0;
     let b = 0;
     for (let i = 0; i <= topCanvas.width; i++) {
         if (i % 5 == 0) {
             if (i % 50 == 0) {
-                scale(topCtx, i, canvas, topCanvas, 20);
+                scale(topCtx, i, canvas, topCanvas, 15);
                 topCtx.closePath();
-                topCtx.font = "9px tahoma";
-                topCtx.fillStyle = "#b3b3b3";
-                topCtx.fillText(a.toString(), i + 2, 9);
+                topCtx.font = "11px tahoma";
+                topCtx.fillStyle = "#126e82";
+                topCtx.textBaseline = 'top';
+                topCtx.fillText(a.toString(), i + 2, 0);
                 a += 50;
-            } else if (i % 10 == 0) { scale(topCtx, i, canvas, topCanvas, 7); }
-            else { scale(topCtx, i, canvas, topCanvas, 10); }
+            } else if (i % 10 == 0) { scale(topCtx, i, canvas, topCanvas, 3); }
+            else { scale(topCtx, i, canvas, topCanvas, 5); }
         }
     }
     for (let i = 0; i <= leftCanvas.height; i++) {
         if (i % 5 == 0) {
             if (i % 50 == 0) {
-                scale(leftCtx, i, canvas, leftCanvas, 20);
+                scale(leftCtx, i, canvas, leftCanvas, 15);
                 leftCtx.save();
-                leftCtx.translate(2, i + 12);
+                leftCtx.translate(0, i + 12);
                 leftCtx.rotate(-0.5 * Math.PI);
-                leftCtx.font = "9px tahoma";
-                leftCtx.fillStyle = "#071a88";// "#b3b3b3";
+                leftCtx.font = "11px tahoma";
+                leftCtx.fillStyle = "#126e82";
                 leftCtx.textBaseline = "top";
                 leftCtx.fillText(b.toString(), 0, 0);
                 leftCtx.restore();
                 b += 50;
-            } else if (i % 10 == 0) { scale(leftCtx, i, canvas, leftCanvas, 7); }
-            else { scale(leftCtx, i, canvas, leftCanvas, 10); }
+            } else if (i % 10 == 0) { scale(leftCtx, i, canvas, leftCanvas, 3); }
+            else { scale(leftCtx, i, canvas, leftCanvas, 5); }
         }
     }
 }
 let scale = (context, index, sourceCanvas, targetCanvas, lineHeight) => {
     context.beginPath();
-    context.lineWidth = 1.5;
+    context.lineWidth = 2;
     if (context == leftCtx) {
         context.moveTo(targetCanvas.width, index + 15);
         context.lineTo(targetCanvas.width - lineHeight, index + 15);
@@ -84,7 +106,7 @@ let scale = (context, index, sourceCanvas, targetCanvas, lineHeight) => {
         context.moveTo(index, targetCanvas.height);
         context.lineTo(index, targetCanvas.height - lineHeight);
     }
-    context.strokeStyle = "#b3b3b3";
+    context.strokeStyle = "#126e82";
     context.stroke();
     context.closePath();
 }
@@ -121,6 +143,7 @@ let pencilPoints = [];
 let eraserPoints = [];
 let resize = { index: -1, constName: "notKnown", pos: "o" };
 let anchrSize = 3;
+let isGridVisible = false;
 
 //Setting fontsize and font Name
 const setTextFontSize = (val) => {
@@ -142,11 +165,11 @@ let polygonOpt = document.querySelectorAll('.polygonOpt');
 polygonOpt.forEach(opt => {
     opt.addEventListener('click', e => {
         let classlist = opt.classList;
-        if(classlist.contains("hexagon")){
+        if (classlist.contains("hexagon")) {
             PolygonButton.textContent = opt.innerHTML;
             spike = 6;
         }
-        if(classlist.contains("star5")){
+        if (classlist.contains("star5")) {
             PolygonButton.innerHTML = opt.textContent;
             spike = 5;
         }
@@ -270,6 +293,9 @@ const reDraw = () => {
             drawnObjects[i].draw();
         }
     }
+    if(!isGridVisible){
+        grid();
+    }
 }
 const startDraw = (e) => {
     mousedown = true;
@@ -386,6 +412,16 @@ const pointerIndication = (index, x, y) => {
         y1 = y1 - yRad;
         x2 = x2 + xRad;
         y2 = y2 + yRad;
+    } else if (resize.constName == "Polygon" || resize.constName == "Star") {
+        let xdistance = Math.pow(x2 - y1, 2);
+        let ydistance = Math.pow(y2 - y1, 2);
+        let rad = (Math.sqrt(xdistance + ydistance)) / 2;
+        let xOrigin = (x2 + y1) / 2;
+        let yOrigin = (y2 + y1) / 2;
+        y1 = xOrigin - rad;
+        y1 = yOrigin - rad;
+        x2 = xOrigin + rad;
+        y2 = yOrigin + rad;
     }
     let width = x2 - x1;
     let height = y2 - y1;
@@ -520,6 +556,43 @@ let getCurrentPosition = (x, y) => {
                 }
             }
         }
+        else if (constName == "Polygon" || constName == "Star") {
+            let xdistance = Math.pow(boxX2 - boxX1, 2);
+            let ydistance = Math.pow(boxY2 - boxY1, 2);
+            let rad = (Math.sqrt(xdistance + ydistance)) / 2;
+            let x1 = midx - rad;
+            let y1 = midy - rad;
+            let x2 = midx + rad;
+            let y2 = midy + rad;
+            let cp = Math.sqrt(Math.pow(x - midx, 2) + Math.pow(y - midy, 2));
+            if (cp <= rad) {
+                return { index: i, constName: constName, pos: 'i' };
+            } else if (x1 - anchrSize < x && x < x1 + anchrSize) {
+                if (y1 - anchrSize < y && y < y1 + anchrSize) {
+                    return { index: i, constName: constName, pos: 'tl' };
+                } else if (y2 - anchrSize < y && y < y2 + anchrSize) {
+                    return { index: i, constName: constName, pos: 'bl' };
+                } else if (midy - anchrSize < y && y < midy + anchrSize) {
+                    return { index: i, constName: constName, pos: 'l' };
+                }
+            } else if (x2 - anchrSize < x && x < x2 + anchrSize) {
+                if (y1 - anchrSize < y && y < y1 + anchrSize) {
+                    return { index: i, constName: constName, pos: 'tr' };
+                } else if (y2 - anchrSize < y && y < y2 + anchrSize) {
+                    return { index: i, constName: constName, pos: 'br' };
+                } else if (midy - anchrSize < y && y < midy + anchrSize) {
+                    return { index: i, constName: constName, pos: 'r' };
+                }
+            } else if (midx - anchrSize < x && x < midx + anchrSize) {
+                if (y1 - anchrSize < y && y < y1 + anchrSize) {
+                    return { index: i, constName: constName, pos: 't' };
+                } else if (y2 - anchrSize < y && y < y2 + anchrSize) {
+                    return { index: i, constName: constName, pos: 'b' };
+                } else if (y1 - anchrSize < y && y < y2 + anchrSize) {
+                    return { index: i, constName: constName, pos: 'i' };
+                }
+            }
+        }
         else if (constName == "Pencil") {
             let x1, y1, x2, y2;
             for (let j = 0; j < box.pencilPoints.length; j++) {
@@ -566,14 +639,25 @@ let drawControlPoints = (resize) => {
         let boxY2 = box.y1 > box.y2 ? box.y1 : box.y2;
         let angle = box.angle * (Math.PI / 180);
         if (resize.constName == "Ellipse") {
-            let xRad = Math.sqrt(Math.pow(boxX2 - boxX1, 2)) / 2;
-            let yRad = Math.sqrt(Math.pow(boxY2 - boxY1, 2)) / 2;
+            let xRad = (boxX2 - boxX1) / 2;//Math.sqrt(Math.pow(boxX2 - boxX1, 2)) / 2;
+            let yRad = (boxY2 - boxY1) / 2//Math.sqrt(Math.pow(boxY2 - boxY1, 2)) / 2;
             boxX1 = boxX1 - xRad;
             boxY1 = boxY1 - yRad;
             boxX2 = boxX2 + xRad;
             boxY2 = boxY2 + yRad;
         }
-        if (resize.constName == "Pencil") {
+        else if (resize.constName == "Polygon" || resize.constName == "Star") {
+            let xdistance = Math.pow(boxX2 - boxX1, 2);
+            let ydistance = Math.pow(boxY2 - boxY1, 2);
+            let rad = (Math.sqrt(xdistance + ydistance)) / 2;
+            let xOrigin = (boxX2 + boxX1) / 2;
+            let yOrigin = (boxY2 + boxY1) / 2;
+            boxX1 = xOrigin - rad;
+            boxY1 = yOrigin - rad;
+            boxX2 = xOrigin + rad;
+            boxY2 = yOrigin + rad;
+        }
+        else if (resize.constName == "Pencil") {
             for (let j = 0; j < drawnObjects[resize.index].pencilPoints.length; j++) {
                 if (j % 2 == 0) {
                     if (j == 0) {
@@ -606,16 +690,16 @@ let drawControlPoints = (resize) => {
 }
 
 const controlPoints = (x1, y1, width, height, angle) => {
-    let anchrSize = 3;
+    let anchrSize = 4;
+    ctx.beginPath();
     ctx.save();
-    ctx.setLineDash([4, 3]);
+    ctx.setLineDash([3, 3]);
     ctx.strokeStyle = "Blue";
     ctx.lineWidth = 2;
     ctx.translate(x1, y1);
     ctx.rotate(angle);
     ctx.rect(0, 0, width, height);
     ctx.stroke();
-    ctx.beginPath();
     ctx.fillStyle = "Blue";
     ctx.fillRect(0 - anchrSize, 0 - anchrSize, 2 * anchrSize, 2 * anchrSize);
     ctx.fillRect(0 - anchrSize + width / 2, 0 - anchrSize, 2 * anchrSize, 2 * anchrSize);
@@ -626,6 +710,7 @@ const controlPoints = (x1, y1, width, height, angle) => {
     ctx.fillRect(0 - anchrSize + width / 2, 0 + height - anchrSize, 2 * anchrSize, 2 * anchrSize);
     ctx.fillRect(0 - anchrSize + width, 0 + height - anchrSize, 2 * anchrSize, 2 * anchrSize);
     ctx.restore();
+    ctx.closePath();
 }
 //Undo function
 const Undo = () => {
@@ -746,7 +831,40 @@ canvas.addEventListener("mouseup", storeDrawings);
 // canvas.addEventListener('touchstart', startDraw);
 // canvas.addEventListener('touchmove', drawing);
 // canvas.addEventListener('touchend', storeDrawings);
-
+// view Options
+let views = document.querySelectorAll('.view');
+views.forEach(view => {
+    view.addEventListener('change', (e) => {
+        let classList = e.target.classList;
+        if(classList.contains('gridlines')){
+            if(e.target.checked){
+                isGridVisible = false;
+                reDraw();
+            }else{
+                isGridVisible = true;
+                reDraw();
+            }
+        }
+        if(classList.contains('rulers')){
+            if(e.target.checked){
+                topCanvas.style.display = '';
+                leftCanvas.style.display = '';
+            }else{
+                topCanvas.style.display = 'none';
+                leftCanvas.style.display = 'none'; 
+            }
+        }
+        if(classList.contains('rightPanel')){
+            let toolbar = document.querySelector('.toolbar');
+            if(e.target.checked){
+                toolbar.style.display = '';
+            }else{
+                toolbar.style.display = 'none';
+            }
+        }
+    })
+})
+//document.querySelector()
 // Undo Redo
 undo.addEventListener('click', Undo);
 redo.addEventListener('click', Redo);

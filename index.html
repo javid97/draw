@@ -14,21 +14,36 @@
 <body>
     <div class="wrapper">
         <div class="menus">
-            <ul>
-                <li>File</li>
+            <ul class="menu">
+                <li>File
+                    <ul class="sub-menus">
+                        <li><i class="fas fa-file-alt"></i><label>New</label></li>
+                        <li><i class="fas fa-folder-open"></i><label>Open</label></li>
+                        <li><i class="fas fa-save"></i><label>Save</label></li>
+                        <li><i class="fas fa-folder-plus"></i><label>Save As</label></li>
+                        <li><i class="fas fa-print"></i><label>Print</label></li>
+                        <li><i class="fas fa-info-circle"></i><label>About Developer</label></li>
+                        <li><i class="fas fa-times-circle"></i><label>Exit</label></li>
+                    </ul>
+                </li>
                 <li>Edit</li>
-                <li>View</li>
+                <li>View
+                    <ul class="sub-menus">
+                        <li><input type="checkbox" name=""class="view gridlines" /><label for="gridlines">Gridlines</label></li>
+                        <li><input type="checkbox" checked name=""class="view rulers" /><label for="rulers">Rulers</label></li>
+                        <li><input type="checkbox" checked name=""class="view rightPanel" /><label for="rightPanel">Right Editing Panel</label></li>
+                    </ul>
+                </li>
                 <li>Object</li>
             </ul>
         </div>
         <div class="undoRedoErr">Undo: Reached its final</div>
         <div class="container">
             <div class="tools">
-                <button data-title="Print" class="button print" onclick="window.print()"><i
-                        class="fas fa-print"></i></button>
+                <button data-title="Print" class="button print" onclick="window.print()">&#x1f5b6</button>
                 <button data-title="Undo" class="button undo">&#10558;</button>
                 <button data-title="Redo" class="button redo">&#10559;</button>
-                <button data-title="Eraser" class="button dButton eraser"><i class="fas fa-eraser"></i></button>
+                <button data-title="Eraser" class="button dButton eraser">&#x232b;</button>
                 <button data-title="Pencil" class="button dButton pencil">&#9998;</button>
                 <button data-title="Text" class="button dButton text">T</button>
                 <button data-title="Line" class="button dButton line">/</button>
@@ -37,6 +52,9 @@
                 <div class="polygonOptions">
                     <button class="dButton dPolygon polygonOpt hexagon">&#11041;</button>
                     <button class="dButton star polygonOpt star5">&#9734;</button>
+                    <button class="dButton star polygonOpt star6">&#10038;</button>
+                    <button class="dButton star polygonOpt star7">&#10036;</button>
+                    <button class="dButton star polygonOpt star7">&#10039</button>
                 </div>
                 <button data-title="Ellipse" class="button dButton ellipse">&#11053;</button>
                 <button data-title="Curve" class="button dButton curve">&#8275;</button>

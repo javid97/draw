@@ -23,7 +23,7 @@ function Pencil() {
     this.x1 = x1;
     this.y1 = y1;
     this.strokeColor = "#000";
-    this.lineWidth = lineWidth;
+    this.lineWidth = 2;
     this.pencilPoints = pencilPoints;
     this.draw = () => {
         ctx.beginPath();
@@ -50,7 +50,7 @@ function Line() {
     this.globalAlpha = 1;
     this.angle = 0;
     this.strokeColor = "#000";
-    this.lineWidth = 1;
+    this.lineWidth = 2;
     this.draw = () => {
         ctx.beginPath();
         ctx.save();
@@ -112,7 +112,7 @@ function Rectangle() {
     this.fillMode = "stroke";
     this.fillColor = fillColor;
     this.strokeColor = "#000";
-    this.lineWidth = lineWidth;
+    this.lineWidth = 2;
     this.draw = () => {
         let width = this.x2 - this.x1;
         let height = this.y2 - this.y1;
@@ -152,7 +152,7 @@ function Ellipse() {
     this.fillMode = "stroke";
     this.fillColor = fillColor;
     this.strokeColor = "#000";
-    this.lineWidth = 1;
+    this.lineWidth = 2;
     this.draw = () => {
         let xRadius = this.x2 - this.x1;
         let yRadius =  this.y2 - this.y1;
@@ -197,13 +197,13 @@ function Polygon() {
     this.y1 = y1 < y2 ? y1 : y2;
     this.x2 = x1 > x2 ? x1 : x2;
     this.y2 = y1 > y2 ? y1 : y2;
-    this.spikes = spike;
+    this.spikes = 8;
     this.globalAlpha = 1;
     this.angle = 0;
     this.fillMode = "stroke";
     this.fillColor = fillColor;
     this.strokeColor = "#000";
-    this.lineWidth = 1;
+    this.lineWidth = 2;
     this.draw = () => {
         let polyAng = 0;
         let step = (Math.PI * 2) / this.spikes;
@@ -249,16 +249,16 @@ function Star() {
     this.y1 = y1 < y2 ? y1 : y2;
     this.x2 = x1 > x2 ? x1 : x2;
     this.y2 = y1 > y2 ? y1 : y2;
-    this.spikes = spike;
+    this.spikes = 9;
     this.globalAlpha = 1;
     this.angle = 0;
     this.fillMode = "stroke";
     this.fillColor = fillColor;
     this.strokeColor = "#000";
-    this.lineWidth = 1;
+    this.lineWidth = 2;
     this.draw = () => {
-        let polyAng = 0;
         let step = (Math.PI) / this.spikes;
+        let polyAng = step;
         ctx.beginPath();
         ctx.save();
         ctx.translate(this.x1, this.y1);
@@ -267,10 +267,10 @@ function Star() {
         let ydistance = Math.pow(this.y2 - this.y1, 2);
         let distance = Math.sqrt(xdistance + ydistance);
         let outerRad = distance / 2;
-        let innerRad = 2 * (outerRad / 3);
+        let innerRad = (outerRad / 2);
         let xOrigin = (this.x2 - this.x1) / 2;
         let yOrigin = (this.y2 - this.y1) / 2;
-        ctx.moveTo(xOrigin + outerRad * Math.sin(0), yOrigin + outerRad * Math.cos(0));
+        ctx.moveTo(xOrigin + outerRad * Math.sin(polyAng), yOrigin + outerRad * Math.cos(polyAng));
         let i = 0;
         for(i; i < this.spikes; i++){
             polyAng += step;
