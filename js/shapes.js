@@ -1,39 +1,39 @@
-// fileInput.onchange = function(e) {
-//     var img = new Image();
-//     imageUrl = URL.createObjectURL(this.files[0]);
-//     img.onload = new drawImg().draw();
-//     img.onerror = failed;
-
-//     img.src = imageUrl;
-
-//   };
-//   function drawImg() {
-//     this.imageUrl = imageUrl;
-//     this.draw = () => {
-//         ctx.drawImage(this.imageUrl, 0,0);
-//         //drawnObjects.push()
-//     }
-
-//   }
-//   function failed() {
-//     console.error("The provided file couldn't be loaded as an Image media");
-//   }
 //Defining Pencil
 function Pencil() {
     this.x1 = x1;
     this.y1 = y1;
-    this.strokeColor = "#000";
-    this.lineWidth = 2;
+    this.fillColor = fillColor;
+    this.strokeColor = strokeColor;
+    this.strokeStyle = strokeStyle;
+    this.fillMode = fillMode;
+    this.globalCompositeOperation = 'source-over';
+    this.angle = angle;
+    this.lineWidth = lineWidth;
+    this.blur = blur;
+    this.opacity = opacity;
     this.pencilPoints = pencilPoints;
     this.draw = () => {
         ctx.beginPath();
-        ctx.moveTo(this.x1, this.y1);
-        for (let i = 0; i < this.pencilPoints.length; i++) {
-            ctx.lineTo(this.pencilPoints[i].x, this.pencilPoints[i].y);
+        ctx.save();
+        ctx.translate(this.x1, this.y1);
+        ctx.rotate(this.angle * (Math.PI / 180));
+        ctx.scale(scaleX, scaleY);
+        if(this.strokeStyle == 'dashed'){
+            ctx.setLineDash([9,5]);
+        } else if(this.strokeStyle == 'dotted'){
+            ctx.setLineDash([2,3]);
         }
+        ctx.globalAlpha = this.opacity;
+        ctx.moveTo(0, 0);
+        for (let i = 0; i < this.pencilPoints.length; i++) {
+            ctx.lineTo(this.pencilPoints[i].x - this.x1, this.pencilPoints[i].y - this.y1);
+        }
+        ctx.globalCompositeOperation = this.globalCompositeOperation;
         ctx.lineWidth = this.lineWidth;
         ctx.strokeStyle = this.strokeColor;
         ctx.stroke();
+        ctx.restore();
+        ctx.closePath();
     }
 }
 
@@ -43,26 +43,35 @@ function Line() {
     this.y1 = y1;
     this.x2 = x2;
     this.y2 = y2;
-    // this.x1 = x1 < x2 ? x1 : x2;
-    // this.y1 = y1 < y2 ? y1 : y2;
-    // this.x2 = x1 > x2 ? x1 : x2;
-    // this.y2 = y1 > y2 ? y1 : y2;
-    this.globalAlpha = 1;
-    this.angle = 0;
-    this.strokeColor = "#000";
-    this.lineWidth = 2;
+    this.fillColor = fillColor;
+    this.strokeColor = strokeColor;
+    this.strokeStyle = strokeStyle;
+    this.fillMode = fillMode;
+    this.globalCompositeOperation = 'source-over';
+    this.angle = angle;
+    this.lineWidth = lineWidth;
+    this.blur = blur;
+    this.opacity = opacity;
     this.draw = () => {
         ctx.beginPath();
         ctx.save();
+        ctx.scale(scaleX, scaleY);
+        if(this.strokeStyle == 'dashed'){
+            ctx.setLineDash([9,5]);
+        } else if(this.strokeStyle == 'dotted'){
+            ctx.setLineDash([2,3]);
+        }
+        ctx.globalAlpha = this.opacity;
         ctx.translate(this.x1,this.y1);
         ctx.rotate(this.angle * (Math.PI / 180));
         ctx.moveTo(0, 0);
         ctx.lineTo(this.x2 - this.x1, this.y2 - this.y1);
-        ctx.globalAlpha = this.globalAlpha;
+        ctx.globalCompositeOperation = this.globalCompositeOperation;
         ctx.lineWidth = this.lineWidth;
         ctx.strokeStyle = this.strokeColor;
         ctx.stroke();
         ctx.restore();
+        ctx.closePath();
     }
 }
 
@@ -72,22 +81,26 @@ function Curve() {
     this.y1 = y1 < y2 ? y1 : y2;
     this.x2 = x1 > x2 ? x1 : x2;
     this.y2 = y1 > y2 ? y1 : y2;
-    this.globalAlpha = 1;
-    this.angle = 0;
-    this.fillMode = "stroke";
     this.fillColor = fillColor;
-    this.strokeColor = "#000";
+    this.strokeColor = strokeColor;
+    this.strokeStyle = strokeStyle;
+    this.fillMode = fillMode;
+    this.globalCompositeOperation = 'source-over';
+    this.angle = angle;
     this.lineWidth = lineWidth;
+    this.blur = blur;
+    this.opacity = opacity;
     this.draw = () => {
         let dx = this.x2 - this.x1;
         let dy = this.y2 - this.y1;
         ctx.beginPath();
         ctx.moveTo(this.x1, this.y1);
         ctx.bezierCurveTo(this.x1 + dx * 0.7, this.y1, this.x1 + dx * 0.67, this.y2, this.x2, this.y2);
-        if (this.fillMode === 'fill') {
+        ctx.globalCompositeOperation = this.globalCompositeOperation;
+        if (this.fillMode === 'fillWithNoStroke') {
             ctx.fillStyle = this.fillColor;
             ctx.fill();
-        } else if (this.fillMode === 'stroke-fill') {
+        } else if (this.fillMode === 'fill') {
             ctx.strokeStyle = this.strokeColor;
             ctx.fillStyle = this.fillColor;
             ctx.lineWidth = this.lineWidth;
@@ -107,76 +120,36 @@ function Rectangle() {
     this.y1 = y1 < y2 ? y1 : y2;
     this.x2 = x1 > x2 ? x1 : x2;
     this.y2 = y1 > y2 ? y1 : y2;
-    this.globalAlpha = 1;
-    this.angle = 0;
-    this.fillMode = "stroke";
     this.fillColor = fillColor;
-    this.strokeColor = "#000";
-    this.lineWidth = 2;
+    this.strokeColor = strokeColor;
+    this.strokeStyle = strokeStyle;
+    this.fillMode = fillMode;
+    this.globalCompositeOperation = 'source-over';
+    this.angle = angle;
+    this.lineWidth = lineWidth;
+    this.blur = blur;
+    this.opacity = opacity;
     this.draw = () => {
         let width = this.x2 - this.x1;
         let height = this.y2 - this.y1;
         ctx.beginPath();
         ctx.save();
+        ctx.scale(scaleX, scaleY);
+        if(this.strokeStyle == 'dashed'){
+            ctx.setLineDash([9,5]);
+        } else if(this.strokeStyle == 'dotted'){
+            ctx.setLineDash([2,3]);
+        }
+        ctx.globalAlpha =this.opacity;
         ctx.translate(this.x1,this.y1);
         ctx.rotate(this.angle * (Math.PI / 180));
         ctx.rect(0, 0, width, height);
-        ctx.globalAlpha = this.globalAlpha;
+        ctx.globalCompositeOperation = this.globalCompositeOperation;
         //Setting Fill mode
-        if (this.fillMode === 'fill') {
+        if (this.fillMode === 'fillWithNoStroke') {
             ctx.fillStyle = this.fillColor;
             ctx.fill();
-        } else if (this.fillMode === 'stroke-fill') {
-            ctx.strokeStyle = this.strokeColor;
-            ctx.fillStyle = this.fillColor;
-            ctx.lineWidth = this.lineWidth;
-            ctx.stroke();
-            ctx.fill();
-        } else {
-            ctx.strokeStyle = this.strokeColor;
-            ctx.lineWidth = this.lineWidth;
-            ctx.stroke();
-        }
-        ctx.restore();
-    }
-}
-
-// Defining Ellipse
-function Ellipse() {
-    this.x1 = x1 < x2 ? x1 : x2;
-    this.y1 = y1 < y2 ? y1 : y2;
-    this.x2 = x1 > x2 ? x1 : x2;
-    this.y2 = y1 > y2 ? y1 : y2;
-    this.globalAlpha = 1;
-    this.angle = 0;
-    this.fillMode = "stroke";
-    this.fillColor = fillColor;
-    this.strokeColor = "#000";
-    this.lineWidth = 2;
-    this.draw = () => {
-        let xRadius = this.x2 - this.x1;
-        let yRadius =  this.y2 - this.y1;
-        // Calculating Mid Point of a Line
-        let midx = (this.x2 - this.x1) / 2;
-        let midy = (this.y2 - this.y1) / 2;
-        ctx.beginPath();
-        ctx.save();
-        ctx.translate(this.x1, this.y1);
-        ctx.rotate(this.angle * (Math.PI / 180))
-        // let scalex = ((this.x2-this.x1)/2);
-        // let scaley = ((this.y2-this.y1)/2);
-        // ctx.scale(scalex,scaley);
-        // //Create ellipse
-        // let midx = (this.x1/scalex)+1;
-        // let midy = (this.y1/scaley)+1;
-        // ctx.arc(midx, midy, 1, 0, 2*Math.PI);
-        ctx.ellipse(midx, midy, xRadius, yRadius, 0, Math.PI * 2, false);
-        ctx.restore();
-        ctx.globalAlpha = this.globalAlpha;
-        if (this.fillMode === 'fill') {
-            ctx.fillStyle = this.fillColor;
-            ctx.fill();
-        } else if (this.fillMode === 'stroke-fill') {
+        } else if (this.fillMode === 'fill') {
             ctx.strokeStyle = this.strokeColor;
             ctx.fillStyle = this.fillColor;
             ctx.lineWidth = this.lineWidth;
@@ -188,6 +161,120 @@ function Ellipse() {
             ctx.stroke();
         }
         
+        ctx.restore();
+        ctx.closePath();
+    }
+}
+// Defining insertion of the image
+function insertImage() {
+    this.x1 = 10;
+    this.y1 = 10;
+    let image = img;
+    this.x2 = image.width;
+    this.y2 = image.height;
+    this.fillColor = fillColor;
+    this.strokeColor = strokeColor;
+    this.strokeStyle = strokeStyle;
+    this.fillMode = fillMode;
+    this.globalCompositeOperation = 'source-over';
+    this.angle = angle;
+    this.lineWidth = lineWidth;
+    this.blur = blur;
+    this.opacity = opacity;
+    this.draw = () => {
+        let width = this.x2 - this.x1;
+        let height = this.y2 - this.y1;
+        ctx.beginPath();
+        ctx.save();
+        ctx.scale(scaleX, scaleY);
+        ctx.globalAlpha = this.opacity;
+        ctx.translate(this.x1,this.y1);
+        ctx.rotate(this.angle * (Math.PI / 180));
+        ctx.drawImage(image, 0, 0, width, height);
+        ctx.globalCompositeOperation = this.globalCompositeOperation;
+        //Setting Fill mode
+        if (this.fillMode === 'fillWithNoStroke') {
+            // ctx.fillStyle = this.fillColor;
+            // ctx.fill();
+        } else if (this.fillMode === 'fill') {
+            // ctx.strokeStyle = this.strokeColor;
+            // ctx.fillStyle = this.fillColor;
+            // ctx.lineWidth = this.lineWidth;
+            // ctx.stroke();
+            // ctx.fill();
+        } else {
+            if(this.strokeStyle == 'dashed'){
+                ctx.setLineDash([9,5]);
+            } else if(this.strokeStyle == 'dotted'){
+                ctx.setLineDash([2,3]);
+            }
+            ctx.rect(0, 0, width, height);
+            ctx.strokeStyle = this.strokeColor;
+            ctx.lineWidth = this.lineWidth;
+            ctx.stroke();
+        }
+        ctx.restore();
+        ctx.closePath();
+    }
+}
+
+// Defining Ellipse
+function Ellipse() {
+    this.x1 = x1 < x2 ? x1 : x2;
+    this.y1 = y1 < y2 ? y1 : y2;
+    this.x2 = x1 > x2 ? x1 : x2;
+    this.y2 = y1 > y2 ? y1 : y2;
+    this.fillColor = fillColor;
+    this.strokeColor = strokeColor;
+    this.strokeStyle = strokeStyle;
+    this.fillMode = fillMode;
+    this.globalCompositeOperation = 'source-over';
+    this.angle = angle;
+    this.lineWidth = lineWidth;
+    this.blur = blur;
+    this.opacity = opacity;
+    this.draw = () => {
+        let xRadius = this.x2 - this.x1;
+        let yRadius =  this.y2 - this.y1;
+        // Calculating Mid Point of a Line
+        let midx = (this.x2 - this.x1) / 2;
+        let midy = (this.y2 - this.y1) / 2;
+        ctx.beginPath();
+        ctx.save();
+        ctx.scale(scaleX, scaleY);
+        if(this.strokeStyle == 'dashed'){
+            ctx.setLineDash([9,5]);
+        } else if(this.strokeStyle == 'dotted'){
+            ctx.setLineDash([2,3]);
+        }
+        ctx.globalAlpha = this.opacity;
+        ctx.translate(this.x1, this.y1);
+        ctx.rotate(this.angle * (Math.PI / 180))
+        // let scalex = ((this.x2-this.x1)/2);
+        // let scaley = ((this.y2-this.y1)/2);
+        // ctx.scale(scalex,scaley);
+        // //Create ellipse
+        // let midx = (this.x1/scalex)+1;
+        // let midy = (this.y1/scaley)+1;
+        // ctx.arc(midx, midy, 1, 0, 2*Math.PI);
+        ctx.ellipse(midx, midy, xRadius, yRadius, 0, Math.PI * 2, false);
+        ctx.globalCompositeOperation = this.globalCompositeOperation;
+        if (this.fillMode === 'fillWithNoStroke') {
+            ctx.fillStyle = this.fillColor;
+            ctx.fill();
+        } else if (this.fillMode === 'fill') {
+            ctx.strokeStyle = this.strokeColor;
+            ctx.fillStyle = this.fillColor;
+            ctx.lineWidth = this.lineWidth;
+            ctx.stroke();
+            ctx.fill();
+        } else {
+            ctx.strokeStyle = this.strokeColor;
+            ctx.lineWidth = this.lineWidth;
+            ctx.stroke();
+        }
+        ctx.restore();
+        ctx.closePath();
     }
 }
 
@@ -198,17 +285,27 @@ function Polygon() {
     this.x2 = x1 > x2 ? x1 : x2;
     this.y2 = y1 > y2 ? y1 : y2;
     this.spikes = 8;
-    this.globalAlpha = 1;
-    this.angle = 0;
-    this.fillMode = "stroke";
     this.fillColor = fillColor;
-    this.strokeColor = "#000";
-    this.lineWidth = 2;
+    this.strokeColor = strokeColor;
+    this.strokeStyle = strokeStyle;
+    this.fillMode = fillMode;
+    this.globalCompositeOperation = 'source-over';
+    this.angle = angle;
+    this.lineWidth = lineWidth;
+    this.blur = blur;
+    this.opacity = opacity;
     this.draw = () => {
         let polyAng = 0;
         let step = (Math.PI * 2) / this.spikes;
         ctx.beginPath();
         ctx.save();
+        ctx.scale(scaleX, scaleY);
+        if(this.strokeStyle == 'dashed'){
+            ctx.setLineDash([9,5]);
+        } else if(this.strokeStyle == 'dotted'){
+            ctx.setLineDash([2,3]);
+        }
+        ctx.globalAlpha = this.opacity;
         ctx.translate(this.x1, this.y1);
         ctx.rotate(this.angle * (Math.PI / 180));
         let xdistance = Math.pow(this.x2 - this.x1, 2);
@@ -223,12 +320,11 @@ function Polygon() {
             polyAng += step
             ctx.lineTo(xOrigin + rad * Math.sin(polyAng), yOrigin + rad * Math.cos(polyAng));
         }
-        ctx.restore();
-        ctx.globalAlpha = this.globalAlpha;
-        if (this.fillMode === 'fill') {
+        ctx.globalCompositeOperation = this.globalCompositeOperation;
+        if (this.fillMode === 'fillWithNoStroke') {
             ctx.fillStyle = this.fillColor;
             ctx.fill();
-        } else if (this.fillMode === 'stroke-fill') {
+        } else if (this.fillMode === 'fill') {
             ctx.strokeStyle = this.strokeColor;
             ctx.fillStyle = this.fillColor;
             ctx.lineWidth = this.lineWidth;
@@ -239,7 +335,8 @@ function Polygon() {
             ctx.lineWidth = this.lineWidth;
             ctx.stroke();
         }
-        
+        ctx.restore();
+        ctx.closePath();
     }
 }
 
@@ -249,18 +346,28 @@ function Star() {
     this.y1 = y1 < y2 ? y1 : y2;
     this.x2 = x1 > x2 ? x1 : x2;
     this.y2 = y1 > y2 ? y1 : y2;
-    this.spikes = 9;
-    this.globalAlpha = 1;
-    this.angle = 0;
-    this.fillMode = "stroke";
+    this.spikes = spike;
     this.fillColor = fillColor;
-    this.strokeColor = "#000";
-    this.lineWidth = 2;
+    this.strokeColor = strokeColor;
+    this.strokeStyle = strokeStyle;
+    this.fillMode = fillMode;
+    this.globalCompositeOperation = 'source-over';
+    this.angle = angle;
+    this.lineWidth = lineWidth;
+    this.blur = blur;
+    this.opacity = opacity;
     this.draw = () => {
         let step = (Math.PI) / this.spikes;
         let polyAng = step;
         ctx.beginPath();
         ctx.save();
+        ctx.scale(scaleX, scaleY);
+        if(this.strokeStyle == 'dashed'){
+            ctx.setLineDash([9,5]);
+        } else if(this.strokeStyle == 'dotted'){
+            ctx.setLineDash([2,3]);
+        }
+        ctx.globalAlpha = this.opacity;
         ctx.translate(this.x1, this.y1);
         ctx.rotate(this.angle * (Math.PI / 180));
         let xdistance = Math.pow(this.x2 - this.x1, 2);
@@ -278,12 +385,11 @@ function Star() {
             polyAng += step;
             ctx.lineTo(xOrigin + outerRad * Math.sin(polyAng), yOrigin + outerRad * Math.cos(polyAng));
         }
-        ctx.restore();
-        ctx.globalAlpha = this.globalAlpha;
-        if (this.fillMode === 'fill') {
+        ctx.globalCompositeOperation = this.globalCompositeOperation;
+        if (this.fillMode === 'fillWithNoStroke') {
             ctx.fillStyle = this.fillColor;
             ctx.fill();
-        } else if (this.fillMode === 'stroke-fill') {
+        } else if (this.fillMode === 'fill') {
             ctx.strokeStyle = this.strokeColor;
             ctx.fillStyle = this.fillColor;
             ctx.lineWidth = this.lineWidth;
@@ -294,7 +400,8 @@ function Star() {
             ctx.lineWidth = this.lineWidth;
             ctx.stroke();
         }
-        
+        ctx.restore();
+        ctx.closePath();
     }
 }
 
@@ -304,7 +411,6 @@ function Eraser() {
     this.eraserPoints = eraserPoints;
     this.draw = () => {
         for (let i = 0; i < this.eraserPoints.length; i++) {
-            ctx.globalCompositeOperation = 'source-over';
             ctx.clearRect(this.eraserPoints[i].x - 25, this.eraserPoints[i].y - 25, 50, 50);
         }
     }
@@ -316,7 +422,7 @@ function Text() {
     this.y1 = y1;
     this.x2 = x2;
     this.y2 = y2;
-    this.globalAlpha = 1;
+    this.opacity = 1;
     this.angle = 0;
     this.showInput = () => {
         text.style.display = 'block';

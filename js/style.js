@@ -8,18 +8,19 @@ const setBtnStyle = () => {
         case MODES.PENCIL:  styleBtn('pencil'); break;
         case MODES.TEXT: styleBtn('text'); break;
         case MODES.ERASER: styleBtn("eraser"); break;
+        case MODES.POLYGON: styleBtn("polygon");break;
         default: break;
     }
 }
-textBtn.addEventListener('click',() => {
-    if(mode == MODES.TEXT){
-        fontName.style.display = 'block';
-        fontSize.style.display = 'block';
-    }else{
-        fontSize.style.display = 'flex';
-        fontName.style.display = 'flex';
-    }
-})
+// textBtn.addEventListener('click',() => {
+//     if(mode == MODES.TEXT){
+//         fontName.style.display = 'block';
+//         fontSize.style.display = 'block';
+//     }else{
+//         fontSize.style.display = 'flex';
+//         fontName.style.display = 'flex';
+//     }
+// })
 let styleBtn = className => {
     buttons.forEach(btn => {
         if (btn.classList.contains(className)) {

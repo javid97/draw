@@ -3,61 +3,101 @@ const canvas = document.getElementById('canvas');
 const container = document.querySelector('.container');
 let undo = document.querySelector('.undo');
 let redo = document.querySelector('.redo');
-let undoRedoErr = document.querySelector('.undoRedoErr');
-let fileInput = document.getElementById('fileInput');
-let textBtn = document.querySelector('.text');
-let textColor = document.getElementById('textColor');
+let errorPopup = document.querySelector('.errorPopup');
+let contextMenuItem = document.querySelectorAll('.contextMenuItem');
+let editorContainer = document.querySelector('.editorContainer');
+let cornerCanvas = document.getElementById('cornerCanvas');
+//Accessing the Input Fields
 let canvasHeight = document.getElementById('canvas-height');
 let canvasWidth = document.getElementById('canvas-width');
 let canvasBackground = document.getElementById('canvas-background');
 let canvasOpacity = document.getElementById('canvas-opacity');
-let toolHeight = document.getElementById('height');
-let toolWidth = document.getElementById('width');
-let toolX = document.getElementById('x');
-let toolY = document.getElementById('y');
 let toolBackground = document.getElementById('background');
-let toolOpacity = document.getElementById('opacity');
+let getOpacity = document.getElementById('opacity');
+let getFillColor = document.getElementById('fillColor');
+let getStrokeColor = document.getElementById('strokeColor');
+let getLineWidth = document.getElementById('lineWidth');
+let getStrokeStyle = document.getElementById('strokeStyle');
+let getFillMode = document.getElementById('fillMode');
+let getBlur = document.getElementById('blur');
+let getRotationAngle = document.getElementById('rotation');
+let toolInputs = document.querySelectorAll('.toolInput');
+let imgFile = document.getElementById('file');
+
+//Declaring variables
+let MODES = {
+    NONE: 0,
+    RECTANGLE: 1,
+    ELLIPSE: 2,
+    CURVE: 3,
+    LINE: 4,
+    PENCIL: 5,
+    TEXT: 6,
+    ERASER: 7,
+    RESIZE: 8,
+    POLYGON: 9,
+    STAR: 10,
+    INSERTIMAGE: 11
+}
+let mode = MODES.NONE;
+let x1, y1, x2, y2;
+let fontsize, font;
+let ImageUrl;
+let mousedown = false;
+let drawnObjects = [];
+let undoArr = [];
+let pencilPoints = [];
+let eraserPoints = [];
+let spike = 5;
+let resize = { index: -1, constName: "notKnown", pos: "o" };
+let anchrSize = 3;
+let isGridVisible = true;
+var scaleX = 1;
+var scaleY = 1;
+let lineWidth, fillColor, strokeColor, fillMode, opacity, strokeStyle, angle, blur, globalCompositeOperation;
+
 //setting height and width to the canvas
-canvas.width = (window.innerWidth / 100) * 78;
-canvas.height = (window.innerHeight / 100) * 87;
+canvas.width = (window.innerWidth / 100) * 80;
+canvas.height = (window.innerHeight / 100) * 90;
 const ctx = canvas.getContext('2d');
 
-
 const leftCanvas = document.getElementById("leftCanvas");
-const cornerCanvas = document.getElementById("cornerCanvas");
 const topCanvas = document.getElementById("topCanvas");
 const topCtx = topCanvas.getContext("2d");
 const leftCtx = leftCanvas.getContext("2d");
 canvasHeight.value = canvas.height;
 canvasWidth.value = canvas.width;
 
+// topCanvas.style.left = canvas.offsetLeft + 'px';
+// leftCanvas.style.top = canvas.offsetTop + 'px';
 
 //topCanvas
 cornerCanvas.height = 15;
 cornerCanvas.width = 15;
-topCanvas.width = canvas.width + 20;//(window.innerWidth / 100) * 78;
+topCanvas.width = canvas.width;//(window.innerWidth / 100) * 78;
 topCanvas.height = 15;
 leftCanvas.width = 15;
 leftCanvas.height = canvas.height + 15;//(window.innerHeight / 100) * 86;
+//Creating Grid
 const grid = () => {
-    let a = 10;
-    let b = 10;
+    let a = 20;
+    let b = 20;
     ctx.beginPath();
     //ctx.setLineDash([1, 1]);
     for (let i = 0; i < canvas.height; i++) {
         ctx.moveTo(0, a);
         ctx.lineTo(canvas.width, a);
-        a += 10;
+        a += 20;
     }
     for (let i = 0; i < canvas.width; i++) {
         ctx.moveTo(b, 0);
         ctx.lineTo(b, canvas.height);
-        b += 10;
+        b += 20;
     }
     ctx.globalCompositeOperation = 'destination-over';
     //ctx.globalAlpha = 0.7;
     ctx.lineWidth = 0.5;
-    ctx.strokeStyle = 'green';
+    ctx.strokeStyle = '#222831';
     ctx.stroke();
     ctx.closePath();
 }
@@ -69,8 +109,8 @@ let Ruler = () => {
             if (i % 50 == 0) {
                 scale(topCtx, i, canvas, topCanvas, 15);
                 topCtx.closePath();
-                topCtx.font = "11px tahoma";
-                topCtx.fillStyle = "#126e82";
+                topCtx.font = "10px arial";
+                topCtx.fillStyle = "#cccccc";
                 topCtx.textBaseline = 'top';
                 topCtx.fillText(a.toString(), i + 2, 0);
                 a += 50;
@@ -85,8 +125,8 @@ let Ruler = () => {
                 leftCtx.save();
                 leftCtx.translate(0, i + 12);
                 leftCtx.rotate(-0.5 * Math.PI);
-                leftCtx.font = "11px tahoma";
-                leftCtx.fillStyle = "#126e82";
+                leftCtx.font = "10px arial";
+                leftCtx.fillStyle = "#cccccc";
                 leftCtx.textBaseline = "top";
                 leftCtx.fillText(b.toString(), 0, 0);
                 leftCtx.restore();
@@ -98,7 +138,7 @@ let Ruler = () => {
 }
 let scale = (context, index, sourceCanvas, targetCanvas, lineHeight) => {
     context.beginPath();
-    context.lineWidth = 2;
+    context.lineWidth = 1;
     if (context == leftCtx) {
         context.moveTo(targetCanvas.width, index + 15);
         context.lineTo(targetCanvas.width - lineHeight, index + 15);
@@ -106,44 +146,99 @@ let scale = (context, index, sourceCanvas, targetCanvas, lineHeight) => {
         context.moveTo(index, targetCanvas.height);
         context.lineTo(index, targetCanvas.height - lineHeight);
     }
-    context.strokeStyle = "#126e82";
+    context.strokeStyle = "#cccccc";
     context.stroke();
     context.closePath();
 }
 Ruler();
 
-// Getting values from the input fields
-const FillColor = document.getElementById('fillColor');
-const Stroke = document.getElementById('stroke');
-const StrokeColor = document.getElementById('strokeColor');
-const LineWidth = document.getElementById('lineWidth');
-//Declaring variables
-let MODES = {
-    NONE: 0,
-    RECTANGLE: 1,
-    ELLIPSE: 2,
-    CURVE: 3,
-    LINE: 4,
-    PENCIL: 5,
-    TEXT: 6,
-    ERASER: 7,
-    RESIZE: 8,
-    POLYGON: 9,
-    STAR: 10
-}
-let mode = MODES.NONE;
-let x1, y1, x2, y2;
-let fontsize, font;
-let ImageUrl;
-let mousedown = false;
-let drawnObjects = [];
-let fillMode, fillColor, strokeColor, lineWidth;
-let undoArr = [];
-let pencilPoints = [];
-let eraserPoints = [];
-let resize = { index: -1, constName: "notKnown", pos: "o" };
-let anchrSize = 3;
-let isGridVisible = false;
+
+// Getting the value of the input fields when they are changed
+toolInputs.forEach(toolInput => {
+    toolInput.addEventListener('change', (e) => {
+        let classList = e.target.classList;
+        let val = toolInput.value;
+        if (classList.contains('lineWidth')) {
+            if (isNaN(val)) {
+                toolInput.value = 'NaN';
+            } else {
+                if (resize.index != -1) {
+                    drawnObjects[resize.index].lineWidth = val;
+                    reDraw();
+                    drawControlPoints(resize);
+                }
+            }
+        }
+        else if (classList.contains('fillColor')) {
+            if (resize.index != -1) {
+                drawnObjects[resize.index].fillColor = val;
+                reDraw();
+                drawControlPoints(resize);
+            }
+        }
+        else if (classList.contains('strokeColor')) {
+            if (resize.index != -1) {
+                drawnObjects[resize.index].strokeColor = val;
+                reDraw();
+                drawControlPoints(resize);
+            }
+        }
+        else if (classList.contains('fillMode')) {
+            if (resize.index != -1) {
+                drawnObjects[resize.index].fillMode = val;
+                reDraw();
+                drawControlPoints(resize);
+            }
+        }
+        else if (classList.contains('opacity')) {
+            if (isNaN(val)) {
+                toolInput.value = 'NaN';
+            } else {
+                if (val > 1) {
+                    toolInput.value = 1;
+                } else if (val < 0) {
+                    toolInput.value = 0;
+                } else {
+                    toolInput.value = val;
+                }
+                if (resize.index != -1) {
+                    drawnObjects[resize.index].opacity = val;
+                    reDraw();
+                    drawControlPoints(resize);
+                }
+            }
+        }
+        else if (classList.contains('strokeStyle')) {
+            if (resize.index != -1) {
+                drawnObjects[resize.index].strokeStyle = val;
+                reDraw();
+                drawControlPoints(resize);
+            }
+        }
+        else if (classList.contains('blur')) {
+            if (isNaN(val)) {
+                toolInput.value = 'NaN';
+            } else {
+                if (resize.index != -1) {
+                    drawnObjects[resize.index].blur = val;
+                    reDraw();
+                    drawControlPoints(resize);
+                }
+            }
+        }
+        else if (classList.contains('rotation')) {
+            if (isNaN(val)) {
+                toolInput.value = 'NaN';
+            } else {
+                if (resize.index != -1) {
+                    drawnObjects[resize.index].angle = val;
+                    reDraw();
+                    drawControlPoints(resize);
+                }
+            }
+        }
+    });
+})
 
 //Setting fontsize and font Name
 const setTextFontSize = (val) => {
@@ -155,7 +250,6 @@ const setTextFontFamily = (val) => {
     text.style.fontFamily = `${val}`;
 }
 //setting the Events to all the polygon buttons
-let spike;
 let PolygonButton = document.querySelector('.polygon');
 let polygonOptions = document.querySelector('.polygonOptions');
 PolygonButton.addEventListener('click', () => {
@@ -166,12 +260,28 @@ polygonOpt.forEach(opt => {
     opt.addEventListener('click', e => {
         let classlist = opt.classList;
         if (classlist.contains("hexagon")) {
-            PolygonButton.textContent = opt.innerHTML;
+            PolygonButton.textContent = opt.textContent;
             spike = 6;
         }
         if (classlist.contains("star5")) {
             PolygonButton.innerHTML = opt.textContent;
             spike = 5;
+        }
+        if (classlist.contains("star6")) {
+            PolygonButton.innerHTML = opt.textContent;
+            spike = 6;
+        }
+        if (classlist.contains("star7")) {
+            PolygonButton.innerHTML = opt.textContent;
+            spike = 7;
+        }
+        if (classlist.contains("star8")) {
+            PolygonButton.innerHTML = opt.textContent;
+            spike = 8;
+        }
+        if (classlist.contains("star12")) {
+            PolygonButton.innerHTML = opt.textContent;
+            spike = 12;
         }
         polygonOptions.style.display = 'none';
     });
@@ -200,6 +310,8 @@ buttons.forEach(button => {
             mode = MODES.POLYGON;
         } else if (classlist.contains("star")) {
             mode = MODES.STAR;
+        } else if (classlist.contains("imgFile")) {
+            mode = MODES.INSERTIMAGE;
         }
         setBtnStyle();
     });
@@ -293,11 +405,14 @@ const reDraw = () => {
             drawnObjects[i].draw();
         }
     }
-    if(!isGridVisible){
+    if (!isGridVisible) {
         grid();
     }
 }
 const startDraw = (e) => {
+    if(e.target != 'contextMenu'){
+        contextMenu.style.display = 'none';
+    }
     mousedown = true;
     drag = false;
     x1 = e.offsetX;
@@ -312,6 +427,14 @@ const startDraw = (e) => {
 }
 const drawing = (e1) => {
     if (mousedown && !isResizable) {//&& resize.index == -1
+        lineWidth = getLineWidth.value;
+        fillColor = getFillColor.value;
+        strokeColor = getStrokeColor.value;
+        fillMode = getFillMode.value;
+        opacity = getOpacity.value;
+        strokeStyle = getStrokeStyle.value;
+        blur = getBlur.value;
+        angle = getRotationAngle.value;
         if (mode == MODES.PENCIL) {
             pencilPoints.push({ x: e1.offsetX, y: e1.offsetY });
         }
@@ -367,8 +490,10 @@ const drawing = (e1) => {
         reDraw();
         drawControlPoints(resize);
     }
-    if (isResizable) {
-        pointerIndication(resize.index, e1.offsetX, e1.offsetY);
+    if (isResizable && drawnObjects.length != 0) {
+        pointerPosition(resize.index, e1.offsetX, e1.offsetY);
+    }else{
+        canvas.style.cursor = 'crosshair';
     }
 }
 const storeDrawings = (e) => {
@@ -385,10 +510,11 @@ const storeDrawings = (e) => {
             isResizable = false;
             reDraw();
         }
-    } else {
+    } else{
         draw();
         reDraw();
         resize.index = drawnObjects.length - 1;
+        resize.constName = drawnObjects[resize.index].constructor.name;
         drawControlPoints(resize);
         isResizable = true;
     }
@@ -397,7 +523,7 @@ const storeDrawings = (e) => {
 }
 
 // Providing the Pointer Indications
-const pointerIndication = (index, x, y) => {
+const pointerPosition = (index, x, y) => {
     let anchorSize = 3;
     let box = drawnObjects[index];
     let x1 = box.x1;
@@ -454,7 +580,7 @@ let getCurrentPosition = (x, y) => {
         let midx = (boxX2 + boxX1) / 2;
         let midy = (boxY2 + boxY1) / 2;
         let constName = box.constructor.name;
-        if (constName == "Rectangle") {
+        if (constName == "Rectangle" || constName == "insertImage") {
             if (boxX1 - anchrSize < x && x < boxX1 + anchrSize) {
                 if (boxY1 - anchrSize < y && y < boxY1 + anchrSize) {
                     return { index: i, constName: constName, pos: 'tl' };
@@ -682,6 +808,11 @@ let drawControlPoints = (resize) => {
                     }
                 }
             }
+        } else if (resize.constName == 'insertImage') {
+            boxX1 = box.x1;
+            boxY1 = box.y1;
+            boxX2 = box.x2;
+            boxY2 = box.y2;
         }
         let width = boxX2 - boxX1;
         let height = boxY2 - boxY1;
@@ -719,9 +850,9 @@ const Undo = () => {
         drawnObjects.pop();
         reDraw();
     } else {
-        undoRedoErr.classList.add('err');
-        undoRedoErr.innerHTML = 'Undo: Reached its final edit';
-        setTimeout(() => undoRedoErr.classList.remove('err'), 1000);
+        errorPopup.classList.add('err');
+        errorPopup.innerHTML = 'Undo: Reached its final edit';
+        setTimeout(() => errorPopup.classList.remove('err'), 1000);
     }
 }
 //Redo Function
@@ -731,26 +862,12 @@ const Redo = () => {
         undoArr.pop();
         reDraw();
     } else {
-        undoRedoErr.classList.add('err');
-        undoRedoErr.innerHTML = 'Redo: Reached its final edit';
-        setTimeout(() => undoRedoErr.classList.remove('err'), 1000);
+        errorPopup.classList.add('err');
+        errorPopup.innerHTML = 'Redo: Reached its final edit';
+        setTimeout(() => errorPopup.classList.remove('err'), 1000);
     }
 }
-let textVal;
-text.addEventListener('keypress', (e) => {
-    if (e.key == 'Enter') {
-        if (text.value !== '') {
-            textVal = text.textContent;
-            fontsize = fontSize.value;
-            fillColor = textColor.value;
-            font = fontName.value;
-            drawnObjects.push(new addText());
-            text.style.display = 'none';
-            text.innerText = '';
-            reDraw();
-        }
-    }
-})
+
 // Mouse Events
 canvas.addEventListener("mousedown", startDraw);
 canvas.addEventListener("mousemove", drawing);
@@ -789,43 +906,6 @@ canvas.addEventListener("mouseup", storeDrawings);
 // canvasBackground.addEventListener('change', () => {
 //     canvas.style.background = canvasBackground.value;
 // });
-// toolHeight.addEventListener('change', () => {
-//     if (isNaN(canvasHeight.value)) {
-//         toolHeight.value = 'NaN';
-//     } else {
-//         canvas.height = canvasHeight.value;
-//     }
-// });
-// toolWidth.addEventListener('change', () => {
-//     if (isNaN(toolWidth.value)) {
-//         toolWidth.value = 'NaN';
-//     } else {
-//         tool.width = toolWidth.value;
-//     }
-// });
-// toolOpacity.addEventListener('change', () => {
-//     let check = toolOpacity.value;
-//     if (isNaN(op)) {
-//         toolOpacity.value = 'NaN';
-//     } else {
-//         if (check > 1) {
-//             tool.style.opacity = 1;
-//             toolOpacity.value = 1;
-//         } else if (check < 0) {
-//             tool.style.opacity = 0;
-//             toolOpacity.value = 0;
-//         }
-//         else {
-//             tool.style.opacity = check;
-//         }
-//     }
-// });
-// toolBackground.addEventListener('change', () => {
-//     tool.style.background = canvasBackground.value;
-// });
-// canvas.addEventListener('click',(e) => {
-//     resize = getCurrentPosition(e.offsetX, e.offsetY);
-// });
 
 // Touch Events
 // canvas.addEventListener('touchstart', startDraw);
@@ -836,35 +916,222 @@ let views = document.querySelectorAll('.view');
 views.forEach(view => {
     view.addEventListener('change', (e) => {
         let classList = e.target.classList;
-        if(classList.contains('gridlines')){
-            if(e.target.checked){
+        if (classList.contains('gridlines')) {
+            if (e.target.checked) {
                 isGridVisible = false;
-                reDraw();
-            }else{
+            } else {
                 isGridVisible = true;
-                reDraw();
             }
+            reDraw();
+            drawControlPoints(resize);
         }
-        if(classList.contains('rulers')){
-            if(e.target.checked){
+        if (classList.contains('rulers')) {
+            if (e.target.checked) {
                 topCanvas.style.display = '';
                 leftCanvas.style.display = '';
-            }else{
+                cornerCanvas.style.display = '';
+            } else {
                 topCanvas.style.display = 'none';
-                leftCanvas.style.display = 'none'; 
+                leftCanvas.style.display = 'none';
+                cornerCanvas.style.display = 'none';
             }
         }
-        if(classList.contains('rightPanel')){
+        if (classList.contains('rightPanel')) {
             let toolbar = document.querySelector('.toolbar');
-            if(e.target.checked){
+            if (e.target.checked) {
                 toolbar.style.display = '';
-            }else{
+            } else {
                 toolbar.style.display = 'none';
             }
         }
+    });
+});
+
+//Zoom Options
+let zooms = document.querySelectorAll('.zoom');
+zooms.forEach(zoom => {
+    zoom.addEventListener('click', (e) => {
+        let classList = e.target.classList;
+        if (classList.contains('zoomIn')) {
+            scaleX += 0.1;
+            scaleY += 0.1;
+            ctx.scale(scaleX, scaleY);
+            leftCtx.scale(scaleX, scaleY);
+            topCtx.scale(scaleX, scaleY);
+            reDraw();
+        } else if (classList.contains('zoomOut')) {
+            scaleX -= 0.1;
+            scaleY -= 0.1;
+            ctx.scale(scaleX, scaleY);
+            leftCtx.scale(scaleX, scaleY);
+            topCtx.scale(scaleX, scaleY);
+            reDraw();
+        } else if (classList.contains('zoomRestore')) {
+            scaleX = 1;
+            scaleY = 1;
+            ctx.scale(scaleX, scaleY);
+            leftCtx.scale(scaleX, scaleY);
+            topCtx.scale(scaleX, scaleY);
+            reDraw();
+        }
+    });
+});
+
+//Inserting an image
+let img;
+file.addEventListener('change', (e) => {
+    const fileReader = new FileReader();
+    img = new Image();
+    let selectedFile = file.files[0];
+    if (selectedFile) {
+        fileReader.onerror = () => {}
+        fileReader.onload = () => {
+            img.onload = () => {
+                strokeColor = getStrokeColor.value;
+                if (img.width > canvas.width) {
+                    canvas.width = img.width + 20;
+                    topCtx.clearRect(0, 0, topCanvas.width, topCanvas.height);
+                    leftCtx.clearRect(0, 0, topCanvas.width, topCanvas.height);
+                    Ruler();
+                }
+                if (img.height > canvas.height) {
+                    canvas.height = img.height + 20;
+                    leftCtx.clearRect(0, 0, topCanvas.width, topCanvas.height);
+                    topCtx.clearRect(0, 0, topCanvas.width, topCanvas.height);
+                    Ruler();
+                }
+                drawnObjects.push(new insertImage());
+                reDraw();
+                resize.index = drawnObjects.length - 1;
+                drawControlPoints(resize);
+                isResizable = true;
+            }
+            img.src = fileReader.result;
+        }
+        fileReader.readAsDataURL(file.files[0]);
+    }
+});
+
+// setting the functions when the context menu is pressed
+let contextMenu = document.getElementById('contextMenu');
+canvas.addEventListener('contextmenu', (e) => {
+    if(isResizable){
+        e.preventDefault();
+        contextMenu.style.display = 'flex';
+        contextMenu.style.top = e.clientY + 'px';
+        contextMenu.style.left = e.clientX + 'px';
+    }
+});
+//setting functions to the context menu items
+contextMenuItem.forEach(menuItem => {
+    menuItem.addEventListener('click', (e) => {
+        let classList = e.target.classList;
+        if(classList.contains('delete')){
+            drawnObjects.splice(resize.index, 1);
+            resize.index = -1;
+            isResizable = false;
+        }else if(classList.contains('bringToFront')){
+            globalCompositeOperation = 'source-over';
+            drawnObjects[resize.index].globalCompositeOperation = globalCompositeOperation;
+        }else if(classList.contains('sendToBack')){
+            globalCompositeOperation = 'destination-over';
+            drawnObjects[resize.index].globalCompositeOperation = globalCompositeOperation;
+        }
+        reDraw();
+        if(drawnObjects.length != 0){
+            drawControlPoints(resize);
+        }
+    });
+});
+//Setting functions to the file Menus
+let saveStatus;
+let fileMenus = document.querySelectorAll('.file-menu');
+let confirmPopup = document.getElementById('confirmPopup');
+fileMenus.forEach(fileMenu => {
+    fileMenu.addEventListener('click', (e) => {
+        let classList = e.target.classList;
+        if(classList.contains('new')){
+            dontSaveBtn.innerHTML = `Don't Save`;
+            saveStatus = 'newPage';
+            confirmPopup.style.display = 'flex';
+        }else if(classList.contains('exit')){
+            confirmPopup.style.display = 'flex';
+            dontSaveBtn.innerHTML = 'Exit';
+            saveStatus = 'exit';
+        }else if(classList.contains('print')){
+            window.print();
+        }else if(classList.contains('save')){
+           // saveBtn.click();
+        }
     })
+});
+
+//Download Image as jpeg function
+const downloadAsJpg = (el) => {
+    let downloadAbleImage = canvas.toDataURL('image/jpg');
+    el.href = downloadAbleImage;
+}
+let saveBtn = document.querySelector('.saveBtn');
+saveBtn.addEventListener('click', (status) => {
+    saveFunction(saveStatus);
+
+});
+const saveFunction = (saveStatus) => {
+    if(saveStatus == 'newPage'){
+        confirmPopup.style.display = 'none';
+        downloadAsJpg(saveBtn);
+        drawnObjects = [];
+        reDraw();
+    }else if(saveStatus == 'exit'){
+        downloadAsJpg(saveBtn);
+        window.close();
+    }
+}
+//Don't save Button
+let dontSaveBtn = document.querySelector('.dontSaveBtn');
+dontSaveBtn.addEventListener('click', () => {
+    if(saveStatus == 'newPage'){
+        confirmPopup.style.display = 'none';
+        drawnObjects = [];
+        reDraw();
+    }else if(saveStatus == 'exit'){
+        window.close();
+    }
 })
-//document.querySelector()
+//Cancel Button
+document.querySelector('.cancelBtn').addEventListener('click', () => {
+    confirmPopup.style.display = 'none';
+});
+
+//Making ruler Portable
+editorContainer.addEventListener('scroll', e => {
+    topCanvas.style.left = 15 - e.target.scrollLeft + 'px';
+    leftCanvas.style.top = -e.target.scrollTop + 'px';
+})
+//uploading image function
+const uploadImage = () => {
+
+}
 // Undo Redo
 undo.addEventListener('click', Undo);
 redo.addEventListener('click', Redo);
+document.querySelector('.Mundo').addEventListener('click', Undo);
+document.querySelector('.Mredo').addEventListener('click', Redo);
+
+//canvas resize 
+// window.addEventListener('resize', () => {
+//     canvas.width = (window.innerWidth / 100) * 76.3;
+//     canvas.height = (window.innerHeight / 100) * 86.4;
+//     topCanvas.width = canvas.width - 70;
+//     leftCanvas.height = canvas.height - 50;
+//     Ruler();
+// });
+//hiding custom context menu
+window.addEventListener('click', (e) => {
+    if(e.target != 'contextMenu'){
+        contextMenu.style.display = 'none';
+    }
+    // if(e.target != confirmPopup.firstChild){
+    //     confirmPopup.style.display = 'none';
+    // }
+})
